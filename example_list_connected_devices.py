@@ -3,7 +3,7 @@ This example will list all the available/connected Kano devices and filter it
 by its classes.
 '''
 
-from ..communitysdk import list_connected_devices,\
+from communitysdk import list_connected_devices,\
     RetailPixelKitSerial as PixelKit
 
 devices = list_connected_devices()
