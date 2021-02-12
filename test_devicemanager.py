@@ -36,3 +36,7 @@ def test_list_connected_devices_instances():
 		assert devices[1].is_connected == True
 		for d in devices:
 			d.close()
+
+
+test_list_connected_devices()
+test_list_connected_devices_instances()
