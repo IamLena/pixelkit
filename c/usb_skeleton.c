@@ -24,8 +24,8 @@
 
 
 /* Define these values to match your devices */
-#define USB_SKEL_VENDOR_ID	0xfff0
-#define USB_SKEL_PRODUCT_ID	0xfff0
+#define USB_SKEL_VENDOR_ID	0x0403
+#define USB_SKEL_PRODUCT_ID	0x6015
 
 /* table of devices that work with this driver */
 static struct usb_device_id skel_table [] = {
@@ -334,6 +334,7 @@ static int __init usb_skel_init(void)
 	if (result)
 		pr_err("usb_register failed. Error number %d", result);
 
+	printk(KERN_INFO "MY INIT\n");
 	return result;
 }
 
@@ -341,6 +342,7 @@ static void __exit usb_skel_exit(void)
 {
 	/* deregister this driver with the USB subsystem */
 	usb_deregister(&skel_driver);
+	printk(KERN_INFO "MY OUT\n");
 }
 
 module_init (usb_skel_init);
