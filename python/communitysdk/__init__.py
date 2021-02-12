@@ -4,5 +4,5 @@ from .devicemanager import list_connected_devices
 from .retailpixelkit import RetailPixelKitSerial
 
 
-__all__ = ['RPCClient', 'SerialDevice', 'MotionSensorKit',
+__all__ = ['RPCClient', 'SerialDevice',
     'RetailPixelKitSerial', 'list_connected_devices']

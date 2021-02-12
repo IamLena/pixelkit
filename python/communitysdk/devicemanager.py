@@ -1,5 +1,4 @@
 import serial.tools.list_ports as list_ports
-from .motionsensorkit import MotionSensorKit
 from .retailpixelkit import RetailPixelKitSerial as PixelKit
 
 vendorIds = {

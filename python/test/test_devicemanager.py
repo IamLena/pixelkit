@@ -1,4 +1,4 @@
-from communitysdk import MotionSensorKit, list_connected_devices
+from communitysdk import list_connected_devices
 from communitysdk import RetailPixelKitSerial as PixelKit
 from types import SimpleNamespace
 import pytest
@@ -13,8 +13,7 @@ def test_list_connected_devices():
 		SimpleNamespace(vid=9025, pid=33102, device="MSK"),
 		SimpleNamespace(vid=1027, pid=24597, device="RPK")
 	]
-	with patch('communitysdk.MotionSensorKit.serial_connect'),\
-		patch('communitysdk.RetailPixelKitSerial.serial_connect'),\
+	with patch('communitysdk.RetailPixelKitSerial.serial_connect'),\
 		patch('serial.tools.list_ports.comports', return_value=vDevices):
 		devices = list_connected_devices()
 		assert len(devices) == 2
@@ -29,11 +28,9 @@ def test_list_connected_devices_instances():
 		SimpleNamespace(vid=9025, pid=33102, device="MSK"),
 		SimpleNamespace(vid=1027, pid=24597, device="RPK")
 	]
-	with patch('communitysdk.MotionSensorKit.serial_connect'),\
-		patch('communitysdk.RetailPixelKitSerial.serial_connect'),\
+	with patch('communitysdk.RetailPixelKitSerial.serial_connect'),\
 		patch('serial.tools.list_ports.comports', return_value=vDevices):
 		devices = list_connected_devices()
-		assert isinstance(devices[0], MotionSensorKit)
 		assert isinstance(devices[1], PixelKit)
 		assert devices[0].is_connected == True
 		assert devices[1].is_connected == True
