@@ -1,4 +1,4 @@
-from communitysdk import list_connected_devices
+from python/communitysdk import list_connected_devices
 from communitysdk import RetailPixelKitSerial as PixelKit
 from types import SimpleNamespace
 import pytest
