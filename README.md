@@ -7,3 +7,13 @@ There you can also find the [API Documentation](https://github.com/KanoComputing
 ## Do you have a question, suggestion or a problem?
 
 Don't worry: [Tell us about it](https://github.com/KanoComputing/community-sdk/issues)!
+
+
+## My notes
+make to build
+sudo insmod usb_skeleton.ko to install module to the kernel
+sudo rmmod usb_skeleton to remove module from the kernel
+dmesg to show kernel log
+
+sudo rmmod fdti_sio to remove the loaded driver
+sudo modprobe fdti_sio to restore it
