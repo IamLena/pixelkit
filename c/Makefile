@@ -1,10 +1,20 @@
-obj-m	:= usb-skeleton.o
+ifneq ($(KERNELRELEASE),)
+        obj-m := md.o
+else
+        CURRENT = $(shell uname -r)
+        KDIR = /lib/modules/$(CURRENT)/build
+        PWD = $(shell pwd)
 
-KERNELDIR ?= /lib/modules/$(shell uname -r)/build
-PWD       := $(shell pwd)
-
-all:
-	$(MAKE) -C $(KERNELDIR) M=$(PWD)
+default:
+        $(MAKE) -C $(KDIR) M=$(PWD) modules
 
 clean:
-	rm -rf *.o *~ core .depend .*.cmd *.ko *.mod.c .tmp_versions *.mod modules.order *.symvers built-in.a
+        @rm -f *.o .*.cmd .*.flags *.mod.c *.order
+        @rm -f .*.*.cmd *~ *.*~ TODO.*
+        @rm -fR .tmp*
+        @rm -rf .tmp_versions
+
+disclean: clean
+        @rm *.ko *.symvers
+
+endif
