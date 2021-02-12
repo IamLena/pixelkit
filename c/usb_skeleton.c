@@ -227,6 +227,7 @@ static struct usb_class_driver skel_class = {
 
 static int skel_probe(struct usb_interface *interface, const struct usb_device_id *id)
 {
+	printk(KERN_INFO "MY PROBE FUNCTION CALLED\n");
 	struct usb_skel *dev = NULL;
 	struct usb_host_interface *iface_desc;
 	struct usb_endpoint_descriptor *endpoint;
