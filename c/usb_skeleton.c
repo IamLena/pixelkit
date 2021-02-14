@@ -7,7 +7,7 @@
 #include <linux/usb.h>
 #include <linux/uaccess.h>
 
-#include<linux/slab.h> // for buf printing in write
+// #include<linux/slab.h> // for buf printing in write
 
 /* Define these values to match your devices */
 #define USB_SKEL_VENDOR_ID	0x2341
