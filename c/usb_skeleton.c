@@ -48,7 +48,7 @@ static void skel_delete(struct kref *kref)
 
 static int skel_open(struct inode *inode, struct file *file)
 {
-	printk(KERN_INTO, "SKEL_OPEN CALLED");
+	printk(KERN_INFO, "SKEL_OPEN CALLED");
 	struct usb_skel *dev;
 	struct usb_interface *interface;
 	int subminor;
@@ -141,19 +141,19 @@ static ssize_t skel_write(struct file *file, const char __user *user_buffer, siz
 {
 	printk(KERN_INFO "SKEL_WRITE FUNCTION CALLED\n");
 
-	// char *buf_internal;
-	// buf_internal = kmalloc(count, GFP_KERNEL);
-	// if (buf_internal == NULL)
-	// 	return -ENOMEM;
-	// if (copy_from_user(buf_internal, user_buffer, count)) {
-	// 	kfree(buf_internal);
-	// 	return -EFAULT;
-	// }
-	// buf_internal[count - 1] = '\0';
-	// printk(KERN_INFO "buffer = %s\n", buf_internal);
-	// // printk(KERN_INFO "count = %d\n", count);
-	// // printk(KERN_INFO "ppos = %s\n", ppos);
-	// kfree(buf_internal);
+	char *buf_internal;
+	buf_internal = kmalloc(count, GFP_KERNEL);
+	if (buf_internal == NULL)
+		return -ENOMEM;
+	if (copy_from_user(buf_internal, user_buffer, count)) {
+		kfree(buf_internal);
+		return -EFAULT;
+	}
+	buf_internal[count - 1] = '\0';
+	printk(KERN_INFO "buffer = %s\n", buf_internal);
+	// printk(KERN_INFO "count = %d\n", count);
+	// printk(KERN_INFO "ppos = %s\n", ppos);
+	kfree(buf_internal);
 
 	struct usb_skel *dev;
 	int retval = 0;
