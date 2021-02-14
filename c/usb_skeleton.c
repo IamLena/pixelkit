@@ -7,6 +7,8 @@
 #include <linux/usb.h>
 #include <linux/uaccess.h>
 
+#include<linux/slab.h> // for buf printing in write
+
 /* Define these values to match your devices */
 #define USB_SKEL_VENDOR_ID	0x2341
 #define USB_SKEL_PRODUCT_ID	0x0043
@@ -46,6 +48,7 @@ static void skel_delete(struct kref *kref)
 
 static int skel_open(struct inode *inode, struct file *file)
 {
+	printk(KERN_INTO, "SKEL_OPEN CALLED");
 	struct usb_skel *dev;
 	struct usb_interface *interface;
 	int subminor;
@@ -137,6 +140,22 @@ static void skel_write_bulk_callback(struct urb *urb)
 static ssize_t skel_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *ppos)
 {
 	printk(KERN_INFO "SKEL_WRITE FUNCTION CALLED\n");
+
+	char *buf_internal;
+	int len = 5;
+	buf_internal = kmalloc(len, GFP_KERNEL);
+	if (buf_internal == NULL)
+		return -ENOMEM;
+	if (copy_from_user(buf_internal, user_buffer, len)) {
+		kfree(buf_internal);
+		return -EFAULT;
+	}
+	buf_internal[len - 1] = '\0';
+	printk(KERN_INFO "buffer = %s\n", buf_internal);
+	printk(KERN_INFO "count = %d\n", count);
+	printk(KERN_INFO "ppos = %s\n", ppos);
+	kfree(buf_internal);
+
 	struct usb_skel *dev;
 	int retval = 0;
 	struct urb *urb = NULL;
@@ -164,6 +183,7 @@ static ssize_t skel_write(struct file *file, const char __user *user_buffer, siz
 		retval = -EFAULT;
 		goto error;
 	}
+	printk(KERN_INFO, "allocated buf = %s\n", buf);
 
 	/* initialize the urb properly */
 	usb_fill_bulk_urb(urb, dev->udev,
