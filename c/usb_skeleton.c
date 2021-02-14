@@ -1,18 +1,3 @@
-/*
- * USB Skeleton driver - 2.0
- *
- * Copyright (C) 2001-2004 Greg Kroah-Hartman (greg@kroah.com)
- *
- *	This program is free software; you can redistribute it and/or
- *	modify it under the terms of the GNU General Public License as
- *	published by the Free Software Foundation, version 2.
- *
- * This driver is based on the 2.6.3 version of drivers/usb/usb-skeleton.c
- * but has been rewritten to be easy to read and use, as no locks are now
- * needed anymore.
- *
- */
-
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -22,10 +7,9 @@
 #include <linux/usb.h>
 #include <linux/uaccess.h>
 
-
 /* Define these values to match your devices */
-#define USB_SKEL_VENDOR_ID	0x0403
-#define USB_SKEL_PRODUCT_ID	0x6015
+#define USB_SKEL_VENDOR_ID	0x2341
+#define USB_SKEL_PRODUCT_ID	0x0043
 
 /* table of devices that work with this driver */
 static struct usb_device_id skel_table [] = {
@@ -33,7 +17,6 @@ static struct usb_device_id skel_table [] = {
 	{ }					/* Terminating entry */
 };
 MODULE_DEVICE_TABLE (usb, skel_table);
-
 
 /* Get a minor range for your devices from the usb maintainer */
 #define USB_SKEL_MINOR_BASE	192
