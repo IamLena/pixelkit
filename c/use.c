@@ -79,7 +79,7 @@ int main (void) {
 	usleep ((7 + 25) * 100);             // sleep enough to transmit the 7 plus
 										// receive 25:  approx 100 uS per char transmit
 	close(fd);
-	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+	fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{
 		printf("error %s\n", strerror(errno));
