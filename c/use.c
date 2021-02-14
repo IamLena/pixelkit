@@ -3,6 +3,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <stdio.h>
 
 // int set_interface_attribs (int fd, int speed, int parity)
 // {
@@ -65,8 +66,9 @@ int main (void) {
 	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{
-		error_message ("error %d opening %s: %s", errno, portname, strerror (errno));
-		return;
+		printf("error %s\n", strerror(errno));
+		// error_message ("error %d opening %s: %s", errno, portname, strerror (errno));
+		return 1;
 	}
 
 	// set_interface_attribs (fd, B115200, 0);  // set speed to 115,200 bps, 8n1 (no parity)
@@ -79,5 +81,6 @@ int main (void) {
 	// char buf [100];
 	// int n = read (fd, buf, sizeof buf);
 	close (fd);
+	return 0;
 }
 
