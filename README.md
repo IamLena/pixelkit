@@ -15,5 +15,9 @@ sudo insmod usb_skeleton.ko to install module to the kernel
 sudo rmmod usb_skeleton to remove module from the kernel
 dmesg to show kernel log
 
-sudo rmmod fdti_sio to remove the loaded driver
-sudo modprobe fdti_sio to restore it
+sudo rmmod ftdi_sio to remove the loaded driver
+sudo modprobe ftdi_sio to restore it
+
+ldd3
+https://lwn.net/Kernel/LDD3/
+http://dmilvdv.narod.ru/Translate/LDD3/Linux_Device_Drivers_3_ru.pdf

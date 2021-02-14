@@ -153,6 +153,7 @@ static void skel_write_bulk_callback(struct urb *urb)
 
 static ssize_t skel_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *ppos)
 {
+	printk(KERN_INFO "SKEL_WRITE FUNCTION CALLED\n");
 	struct usb_skel *dev;
 	int retval = 0;
 	struct urb *urb = NULL;
@@ -201,6 +202,7 @@ exit:
 	return count;
 
 error:
+	printk(KERN_INFO "ERROR\n");
 	usb_free_coherent(dev->udev, count, buf, urb->transfer_dma);
 	usb_free_urb(urb);
 	kfree(buf);
@@ -257,6 +259,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 		    ((endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
 					== USB_ENDPOINT_XFER_BULK)) {
 			/* we found a bulk in endpoint */
+			printk(KERN_INFO "we found a bulk in endpoint\n");
 			buffer_size = endpoint->wMaxPacketSize;
 			dev->bulk_in_size = buffer_size;
 			dev->bulk_in_endpointAddr = endpoint->bEndpointAddress;
@@ -272,6 +275,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 		    ((endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
 					== USB_ENDPOINT_XFER_BULK)) {
 			/* we found a bulk out endpoint */
+			printk(KERN_INFO "we found a bulk out endpoint\n");
 			dev->bulk_out_endpointAddr = endpoint->bEndpointAddress;
 		}
 	}
