@@ -9,17 +9,18 @@
 int main(void)
 {
 	int fd;
-	// fd = open("/dev/skel0", O_RDWR | O_SYNC | O_NOCTTY);
-	// if (fd == -1)
-	// 	printf("fd = -1, error %s\n %d", strerror(errno), errno);
-	// else {
-	// 	int output = write(fd, "hello", 5);
-	// 	printf("write output = %d\n", output);
-	// 	close (fd);
-	// 	printf("file is closed\n");
-	// }
+	char *name = "/dev/ttyACM0";
+	fd = open(name, O_RDWR | O_SYNC | O_NOCTTY);
+	if (fd == -1)
+		printf("fd = -1, error %s\n %d", strerror(errno), errno);
+	else {
+		int output = write(fd, "hello", 5);
+		printf("write output = %d\n", output);
+		close (fd);
+		printf("file is closed\n");
+	}
 
-	fd = open("/dev/skel0", O_RDWR | O_SYNC | O_NOCTTY);
+	fd = open(name, O_RDWR | O_SYNC | O_NOCTTY);
 	if (fd == -1)
 		printf("fd = -1, error %s\n %d", strerror(errno), errno);
 	else {
