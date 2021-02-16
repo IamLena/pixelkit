@@ -1,3 +1,5 @@
+udevadm info --name=/dev/ttyAMC0
+
 P: /devices/pci0000:00/0000:00:12.0/usb3/3-3/3-3:1.0/tty/ttyACM0
 N: ttyACM0
 S: serial/by-id/usb-Arduino__www.arduino.cc__0043_74037343236351F0F020-if00

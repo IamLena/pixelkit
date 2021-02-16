@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+# define CRTSCTS  020000000000
+
 int set_interface_attribs (int fd, int speed, int parity)
 {
         struct termios tty;
@@ -34,7 +36,7 @@ int set_interface_attribs (int fd, int speed, int parity)
         tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
         tty.c_cflag |= parity;
         tty.c_cflag &= ~CSTOPB;
-        // tty.c_cflag &= ~CRTSCTS;
+        tty.c_cflag &= ~CRTSCTS;
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
         {
@@ -66,8 +68,7 @@ int main (void) {
 	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{
-		printf("error %s\n", strerror(errno));
-		// printf ("error %d opening %s: %s", errno, portname, strerror (errno));
+		printf ("error %d opening %s: %s", errno, portname, strerror(errno));
 		return 1;
 	}
 	printf("openned\n");
@@ -85,8 +86,7 @@ int main (void) {
 	fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{
-		printf("error %s\n", strerror(errno));
-		// printf ("error %d opening %s: %s", errno, portname, strerror (errno));
+		printf ("error %d opening %s: %s", errno, portname, strerror(errno));
 		return 1;
 	}
 	printf("openned\n");
