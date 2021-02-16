@@ -184,7 +184,7 @@ static ssize_t skel_write(struct file *file, const char __user *user_buffer, siz
 	usb_free_urb(urb);
 
 exit:
-	printk(KERN_INFO, "EXITING WRITE FUNCTION")
+	printk(KERN_INFO, "EXITING WRITE FUNCTION");
 	return count;
 
 error:
