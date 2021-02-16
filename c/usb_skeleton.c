@@ -102,10 +102,10 @@ static ssize_t skel_read(struct file *file, char __user *buffer, size_t count, l
 
 	/* do a blocking bulk read to get data from the device */
 	retval = usb_bulk_msg(dev->udev,
-			      usb_rcvbulkpipe(dev->udev, dev->bulk_in_endpointAddr),
-			      dev->bulk_in_buffer,
-			      min(dev->bulk_in_size, count),
-			      (int *) &count, HZ*10);
+			usb_rcvbulkpipe(dev->udev, dev->bulk_in_endpointAddr),
+			dev->bulk_in_buffer,
+			min(dev->bulk_in_size, count),
+			(int *) &count, HZ*10);
 
 	/* if the read was successful, copy the data to userspace */
 	if (!retval) {
