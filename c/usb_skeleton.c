@@ -80,6 +80,7 @@ exit:
 
 static int skel_release(struct inode *inode, struct file *file)
 {
+	printk(KERN_INFO "RELEASE");
 	struct usb_skel *dev;
 
 	dev = (struct usb_skel *)file->private_data;
@@ -93,6 +94,7 @@ static int skel_release(struct inode *inode, struct file *file)
 
 static ssize_t skel_read(struct file *file, char __user *buffer, size_t count, loff_t *ppos)
 {
+	printk(KERN_INFO "SKEL_READ CALLED");
 	struct usb_skel *dev;
 	int retval = 0;
 
