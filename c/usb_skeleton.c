@@ -94,7 +94,7 @@ static int skel_release(struct inode *inode, struct file *file)
 
 static ssize_t skel_read(struct file *file, char __user *buffer, size_t count, loff_t *ppos)
 {
-	printk(KERN_INFO "SKEL_READ CALLED");
+	printk(KERN_INFO "SEL_READ CALLEDK");
 	struct usb_skel *dev;
 	int retval = 0;
 
