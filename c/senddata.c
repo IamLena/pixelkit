@@ -8,7 +8,8 @@
 
 int main(void)
 {
-	// int fd = open("/dev/skel0", O_RDWR | O_SYNC | O_NOCTTY);
+	int fd;
+	// fd = open("/dev/skel0", O_RDWR | O_SYNC | O_NOCTTY);
 	// if (fd == -1)
 	// 	printf("fd = -1, error %s\n %d", strerror(errno), errno);
 	// else {
