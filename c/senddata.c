@@ -9,7 +9,8 @@
 int main(void)
 {
 	int fd;
-	char *name = "/dev/ttyACM0";
+	// char *name = "/dev/ttyACM0";
+	char *name = "/dev/skel0";
 	fd = open(name, O_RDWR | O_SYNC | O_NOCTTY);
 	if (fd == -1)
 		printf("fd = -1, error %s\n %d", strerror(errno), errno);
