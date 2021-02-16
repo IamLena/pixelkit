@@ -6,8 +6,8 @@ int i = 0;
 
 void setup() {
   gamer.begin();
-//  Serial.begin(9600);
-  Serial.begin(115200);
+  Serial.begin(9600);
+//  Serial.begin(115200);
 }
 
 void loop() {
@@ -20,6 +20,7 @@ void loop() {
 
   gamer.printString(command);
   gamer.updateDisplay();
+  Serial.print("get the message");
   delay(100);
   i = 0;
 }
