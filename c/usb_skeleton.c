@@ -7,8 +7,6 @@
 #include <linux/usb.h>
 #include <linux/uaccess.h>
 
-// #include<linux/slab.h> // for buf printing in write
-
 /* Define these values to match your devices */
 #define USB_SKEL_VENDOR_ID	0x2341
 #define USB_SKEL_PRODUCT_ID	0x0043
@@ -122,6 +120,7 @@ static void skel_write_bulk_callback(struct urb *urb)
 {
 	struct usb_skel *dev = urb->context;
 
+	printk(KERN_INFO, "WRITE CALLBACK status %d\n", urb->status);
 	/* sync/async unlink faults aren't errors */
 	if (urb->status &&
 	    !(urb->status == -ENOENT ||
@@ -140,21 +139,6 @@ static void skel_write_bulk_callback(struct urb *urb)
 static ssize_t skel_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *ppos)
 {
 	printk(KERN_INFO "SKEL_WRITE FUNCTION CALLED\n");
-
-	char *buf_internal;
-	buf_internal = kmalloc(count, GFP_KERNEL);
-	if (buf_internal == NULL)
-		return -ENOMEM;
-	if (copy_from_user(buf_internal, user_buffer, count)) {
-		kfree(buf_internal);
-		return -EFAULT;
-	}
-	buf_internal[count - 1] = '\0';
-	printk(KERN_INFO "buffer = %s\n", buf_internal);
-	// printk(KERN_INFO "count = %d\n", count);
-	// printk(KERN_INFO "ppos = %s\n", ppos);
-	kfree(buf_internal);
-
 	struct usb_skel *dev;
 	int retval = 0;
 	struct urb *urb = NULL;
