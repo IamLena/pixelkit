@@ -237,11 +237,10 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 	/* set up the endpoint information */
 	/* use only the first bulk-in and bulk-out endpoints */
 	iface_desc = interface->cur_altsetting;
-	printk(KERN_INFO, "interface bLength %d\n", iface_desc->bLength);
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
 
-		printk(KERN_INFO, "endpoint adress %x\n", iface_desc->endpoint->bEndpointAddress);
+		printk(KERN_INFO, "endpoint adress %x\n", endpoint->bEndpointAddress);
 		if (!dev->bulk_in_endpointAddr &&
 		    (endpoint->bEndpointAddress & USB_DIR_IN) &&
 		    ((endpoint->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
