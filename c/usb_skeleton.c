@@ -270,6 +270,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 		pr_err("Could not find both bulk-in and bulk-out endpoints");
 		goto error;
 	}
+	printk(KERN_INFO, "endpoints adress %x %x\n", dev->bulk_in_endpointAddr, dev->bulk_out_endpointAddr);
 
 	/* save our data pointer in this interface device */
 	usb_set_intfdata(interface, dev);
