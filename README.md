@@ -39,7 +39,7 @@ dev/skel0 - is my char file to send data to device
 
 """""
 exec 3<>/dev/skel0
-stty -F /dev/skel0 9600 cs8 -cstopb -parenb
+<!-- stty -F /dev/skel0 9600 cs8 -cstopb -parenb --> not needed modified speed rate to 115200
 echo "hello" >$3
 cat <$3
 exec 3<&-  to close fd
