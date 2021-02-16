@@ -46,7 +46,7 @@ static void skel_delete(struct kref *kref)
 
 static int skel_open(struct inode *inode, struct file *file)
 {
-	printk(KERN_INFO "SKEL_OPEN CALLED");
+	printk(KERN_INFO "SKEL_OPEN CALLED\n");
 	struct usb_skel *dev;
 	struct usb_interface *interface;
 	int subminor;
@@ -184,7 +184,7 @@ static ssize_t skel_write(struct file *file, const char __user *user_buffer, siz
 	usb_free_urb(urb);
 
 exit:
-	printk(KERN_INFO "EXITING WRITE FUNCTION");
+	printk(KERN_INFO "EXITING WRITE FUNCTION\n");
 	return count;
 
 error:
@@ -271,7 +271,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 		goto error;
 	}
 	printk(KERN_INFO "endpoints adress %x %x\n", dev->bulk_in_endpointAddr, dev->bulk_out_endpointAddr);
-
+	printk(KERN_INFO "hello\n");
 	/* save our data pointer in this interface device */
 	usb_set_intfdata(interface, dev);
 
