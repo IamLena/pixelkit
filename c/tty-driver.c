@@ -505,6 +505,7 @@ static struct tty_driver *tiny_tty_driver;
 
 static int __init tiny_init(void)
 {
+	pr_info("init called \n");
 	int retval;
 	int i;
 
