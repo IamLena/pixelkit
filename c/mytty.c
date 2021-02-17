@@ -350,7 +350,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 
 	/* let the user know what node this device is now attached to */
 	dev_info(&interface->dev, "USB Skeleton device now attached to USBSkel-%d", interface->minor);
-	tty_register_device(tiny_tty_driver, 0, dev->dev);
+	tty_register_device(tiny_tty_driver, 0, dev->udev->dev);
 	return 0;
 
 error:
