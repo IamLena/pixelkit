@@ -1,4 +1,4 @@
-#include <linux/config.h>
+// #include <linux/config.h> unknown
 
 #ifdef CONFIG_USB_SERIAL_DEBUG
    static int debug = 1;

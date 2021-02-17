@@ -12,7 +12,7 @@ int set_interface_attribs (int fd, int speed, int parity)
         struct termios tty;
         if (tcgetattr (fd, &tty) != 0)
         {
-                printf("error %d from tcgetattr", errno);
+                printf("error %d from tcgetattr\n", errno);
                 return -1;
         }
 
@@ -40,7 +40,7 @@ int set_interface_attribs (int fd, int speed, int parity)
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
         {
-                printf ("error %d from tcsetattr", errno);
+                printf ("error %d from tcsetattr\n", errno);
                 return -1;
         }
         return 0;
