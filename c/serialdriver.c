@@ -13,7 +13,7 @@
 #include <linux/module.h>
 #include <linux/usb.h>
 // #include <linux/usb/serial/usb-serial.h>
-#include </linux/serial.h>
+#include <linux/usb/serial.h>
 
 #define MY_PRODUCT_ID	0x2341
 #define MY_DEVICE_ID	0x0043
