@@ -1,18 +1,9 @@
-// #include <linux/config.h> unknown
-
-#ifdef CONFIG_USB_SERIAL_DEBUG
-   static int debug = 1;
-   #define DEBUG
-#else
-   static int debug;
-#endif
-
+#include "usr/src/linux-headers-3.2.0-41/include/linux/config.h"
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/tty.h>
 #include <linux/module.h>
 #include <linux/usb.h>
-// #include <linux/usb/serial/usb-serial.h>
 #include <linux/usb/serial.h>
 
 #define MY_PRODUCT_ID	0x2341
