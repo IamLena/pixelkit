@@ -1,4 +1,3 @@
-Listing 1. The Tiny Tiny USB Serial Driver
 #include <linux/config.h>
 
 #ifdef CONFIG_USB_SERIAL_DEBUG
