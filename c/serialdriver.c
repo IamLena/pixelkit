@@ -12,7 +12,7 @@
 #include <linux/tty.h>
 #include <linux/module.h>
 #include <linux/usb.h>
-#include <../drivers/usb/serial/usb-serial.h>
+#include <linux/usb/serial/usb-serial.h>
 
 #define MY_PRODUCT_ID	0x2341
 #define MY_DEVICE_ID	0x0043
