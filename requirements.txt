@@ -1,3 +1,0 @@
-pyserial
-pytest
-pytest-cov

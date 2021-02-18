@@ -1,9 +1,6 @@
 ifneq ($(KERNELRELEASE),)
 	# obj-m := usb_skeleton.o
-	# obj-m := tty-driver.o
-	obj-m := mytty.o
-	# obj-m := serialdriver.o
-	# obj-m := driverfromsrc.o
+	obj-m := tiny_serial.o
 else
 	CURRENT = $(shell uname -r)
 	KDIR = /lib/modules/$(CURRENT)/build
