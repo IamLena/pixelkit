@@ -34,3 +34,7 @@ exec 3<&-  to close fd
 """
 
 usb_driver usb_skeleton registers the device as 180:0 char device (/dev/skel0), sends data on write call, but device does not output anything
+
+"""
+init_serial_interface
+https://github.com/dj0abr/ttyUSB-handler
