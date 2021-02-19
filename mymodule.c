@@ -106,9 +106,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
 	mydevice = dev->udev->dev;
 
-	for (int i = 0; i < TINY_TTY_MINORS; ++i)
-		tty_register_device(tiny_tty_driver, i, &mydevice);
-		// tty_register_device(tiny_tty_driver, i, NULL);
+	tty_register_device(tiny_tty_driver, 0, &mydevice);
 	return 0;
 error:
 	if (dev)
@@ -121,8 +119,7 @@ static void skel_disconnect(struct usb_interface *interface)
 	struct usb_skel *dev;
 	int minor = interface->minor;
 
-	for (int i = 0; i < TINY_TTY_MINORS; ++i)
-		tty_unregister_device(tiny_tty_driver, i);
+	tty_unregister_device(tiny_tty_driver, 0);
 	dev = usb_get_intfdata(interface);
 	usb_set_intfdata(interface, NULL);
 	usb_deregister_dev(interface, &skel_class);
