@@ -31,7 +31,6 @@ static void skel_delete(struct kref *kref)
 {
 	struct usb_skel *dev = to_skel_dev(kref);
 	usb_put_dev(dev->udev);
-	usb_put_dev(&mydevice);
 	kfree (dev);
 }
 
