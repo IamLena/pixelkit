@@ -67,7 +67,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 	}
 	kref_init(&dev->kref);
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
-	mydevice = *(dev->udev->dev);
+	mydevice = dev->udev->dev;
 	return 0;
 error:
 	if (dev)
