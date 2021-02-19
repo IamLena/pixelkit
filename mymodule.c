@@ -53,7 +53,7 @@ static struct tiny_serial *tiny_table[TINY_TTY_MINORS];	/* initially all NULL */
 
 static int __init tiny_init(void)
 {
-	printk(KERN_DEBUG "init called");
+	printk(KERN_INFO "init called");
 	int retval;
 	int i;
 
