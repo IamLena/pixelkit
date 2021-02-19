@@ -16,6 +16,44 @@
 #include <linux/usb.h>
 
 
+#define DRIVER_VERSION "v2.0"
+#define DRIVER_AUTHOR "Luchina"
+#define DRIVER_DESC "Tiny TTY driver"
+
+/* Module information */
+MODULE_AUTHOR(DRIVER_AUTHOR);
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL");
+
+#define DELAY_TIME		(HZ * 2)	/* 2 seconds per character */
+#define TINY_DATA_CHARACTER	't'
+
+#define TINY_TTY_MAJOR		240	/* experimental range */
+#define TINY_TTY_MINORS		1	/* only have 4 devices */
+
+static const struct tty_operations serial_ops = {
+};
+static struct tty_driver *tiny_tty_driver;
+static struct tty_port tiny_tty_port[TINY_TTY_MINORS];
+
+struct tiny_serial {
+	struct tty_struct	*tty;		/* pointer to the tty for this device */
+	int			open_count;	/* number of times this port has been opened */
+	struct mutex	mutex;		/* locks this structure */
+	struct timer_list	timer;
+
+	/* for tiocmget and tiocmset functions */
+	int			msr;		/* MSR shadow */
+	int			mcr;		/* MCR shadow */
+
+	/* for ioctl fun */
+	struct serial_struct	serial;
+	wait_queue_head_t	wait;
+	struct async_icount	icount;
+};
+
+static struct tiny_serial *tiny_table[TINY_TTY_MINORS];	/* initially all NULL */
+
 #define USB_SKEL_MINOR_BASE	192
 #define USB_SKEL_VENDOR_ID	0x2341
 #define USB_SKEL_PRODUCT_ID	0x0043
@@ -67,6 +105,10 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 	kref_init(&dev->kref);
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
 	mydevice = dev->udev->dev;
+
+	for (int i = 0; i < TINY_TTY_MINORS; ++i)
+		tty_register_device(tiny_tty_driver, i, &mydevice);
+		// tty_register_device(tiny_tty_driver, i, NULL);
 	return 0;
 error:
 	if (dev)
@@ -79,6 +121,8 @@ static void skel_disconnect(struct usb_interface *interface)
 	struct usb_skel *dev;
 	int minor = interface->minor;
 
+	for (int i = 0; i < TINY_TTY_MINORS; ++i)
+		tty_unregister_device(tiny_tty_driver, i);
 	dev = usb_get_intfdata(interface);
 	usb_set_intfdata(interface, NULL);
 	usb_deregister_dev(interface, &skel_class);
@@ -92,44 +136,6 @@ static struct usb_driver skel_driver = {
 	.probe = skel_probe,
 	.disconnect = skel_disconnect,
 };
-
-#define DRIVER_VERSION "v2.0"
-#define DRIVER_AUTHOR "Luchina"
-#define DRIVER_DESC "Tiny TTY driver"
-
-/* Module information */
-MODULE_AUTHOR(DRIVER_AUTHOR);
-MODULE_DESCRIPTION(DRIVER_DESC);
-MODULE_LICENSE("GPL");
-
-#define DELAY_TIME		(HZ * 2)	/* 2 seconds per character */
-#define TINY_DATA_CHARACTER	't'
-
-#define TINY_TTY_MAJOR		240	/* experimental range */
-#define TINY_TTY_MINORS		4	/* only have 4 devices */
-
-static const struct tty_operations serial_ops = {
-};
-static struct tty_driver *tiny_tty_driver;
-static struct tty_port tiny_tty_port[TINY_TTY_MINORS];
-
-struct tiny_serial {
-	struct tty_struct	*tty;		/* pointer to the tty for this device */
-	int			open_count;	/* number of times this port has been opened */
-	struct mutex	mutex;		/* locks this structure */
-	struct timer_list	timer;
-
-	/* for tiocmget and tiocmset functions */
-	int			msr;		/* MSR shadow */
-	int			mcr;		/* MCR shadow */
-
-	/* for ioctl fun */
-	struct serial_struct	serial;
-	wait_queue_head_t	wait;
-	struct async_icount	icount;
-};
-
-static struct tiny_serial *tiny_table[TINY_TTY_MINORS];	/* initially all NULL */
 
 static int __init tiny_init(void)
 {
@@ -171,9 +177,9 @@ static int __init tiny_init(void)
 		return retval;
 	}
 
-	for (i = 0; i < TINY_TTY_MINORS; ++i)
-	tty_register_device(tiny_tty_driver, i, &mydevice);
-		// tty_register_device(tiny_tty_driver, i, NULL);
+	// for (i = 0; i < TINY_TTY_MINORS; ++i)
+	// 	// tty_register_device(tiny_tty_driver, i, &mydevice);
+	// 	tty_register_device(tiny_tty_driver, i, NULL);
 
 	pr_info(DRIVER_DESC " " DRIVER_VERSION);
 	return retval;
@@ -205,8 +211,8 @@ static void __exit tiny_exit(void)
 	struct tiny_serial *tiny;
 	int i;
 
-	for (i = 0; i < TINY_TTY_MINORS; ++i)
-		tty_unregister_device(tiny_tty_driver, i);
+	// for (i = 0; i < TINY_TTY_MINORS; ++i)
+	// 	tty_unregister_device(tiny_tty_driver, i);
 	tty_unregister_driver(tiny_tty_driver);
 
 	/* shut down all of the timers and free the memory */
