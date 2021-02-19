@@ -38,3 +38,10 @@ usb_driver usb_skeleton registers the device as 180:0 char device (/dev/skel0), 
 """
 init_serial_interface
 https://github.com/dj0abr/ttyUSB-handler
+
+"""
+https://opensource.com/article/18/11/udev
+https://stackoverflow.com/questions/28836712/how-do-you-get-a-struct-device-for-a-linux-character-device
+
+"""
+у меня вот тут есть вот такой вызов tty_register_device(tiny_tty_driver, i, NULL); И вместо NULL мне нужно передать указатель на struct device моего устройства. Вот как мне эту структуру вытащить, я не могу понять.
