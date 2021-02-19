@@ -40,7 +40,7 @@ static void skel_delete(struct kref *kref)
 {
 	struct usb_skel *dev = to_skel_dev(kref);
 	usb_put_dev(dev->udev);
-	usb_put_dev(mydevice);
+	usb_put_dev(&mydevice);
 	kfree (dev);
 }
 
@@ -67,7 +67,7 @@ static int skel_probe(struct usb_interface *interface, const struct usb_device_i
 	}
 	kref_init(&dev->kref);
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
-	mydevice = = usb_get_dev(interface_to_usbdev(interface));
+	mydevice = usb_get_dev(interface_to_usbdev(interface));
 	return 0;
 error:
 	if (dev)
