@@ -1,38 +1,125 @@
-udevadm info --name=/dev/ttyAMC0
 
-P: /devices/pci0000:00/0000:00:12.0/usb3/3-3/3-3:1.0/tty/ttyACM0
-N: ttyACM0
-S: serial/by-id/usb-Arduino__www.arduino.cc__0043_74037343236351F0F020-if00
-S: serial/by-path/pci-0000:00:12.0-usb-0:3:1.0
-E: DEVLINKS=/dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_74037343236351F0F020-if00 /dev/serial/by-path/pci-0000:00:12.0-usb-0:3:1.0
-E: DEVNAME=/dev/ttyACM0
-E: DEVPATH=/devices/pci0000:00/0000:00:12.0/usb3/3-3/3-3:1.0/tty/ttyACM0
-E: ID_BUS=usb
-E: ID_MM_CANDIDATE=1
-E: ID_MODEL=0043
-E: ID_MODEL_ENC=0043
-E: ID_MODEL_FROM_DATABASE=Uno R3 (CDC ACM)
-E: ID_MODEL_ID=0043
-E: ID_PATH=pci-0000:00:12.0-usb-0:3:1.0
-E: ID_PATH_TAG=pci-0000_00_12_0-usb-0_3_1_0
-E: ID_PCI_CLASS_FROM_DATABASE=Serial bus controller
-E: ID_PCI_INTERFACE_FROM_DATABASE=OHCI
-E: ID_PCI_SUBCLASS_FROM_DATABASE=USB controller
-E: ID_REVISION=0001
-E: ID_SERIAL=Arduino__www.arduino.cc__0043_74037343236351F0F020
-E: ID_SERIAL_SHORT=74037343236351F0F020
-E: ID_TYPE=generic
-E: ID_USB_CLASS_FROM_DATABASE=Communications
-E: ID_USB_DRIVER=cdc_acm
-E: ID_USB_INTERFACES=:020201:0a0000:
-E: ID_USB_INTERFACE_NUM=00
-E: ID_VENDOR=Arduino__www.arduino.cc_
-E: ID_VENDOR_ENC=Arduino\x20\x28www.arduino.cc\x29
-E: ID_VENDOR_FROM_DATABASE=Arduino SA
-E: ID_VENDOR_ID=2341
-E: MAJOR=166
-E: MINOR=0
-E: SUBSYSTEM=tty
-E: TAGS=:systemd:
-E: USEC_INITIALIZED=17011280564
+Udevadm info starts with the device specified by the devpath and then
+walks up the chain of parent devices. It prints for every device
+found, all possible attributes in the udev rules key format.
+A rule to match, can be composed by the attributes of the device
+and the attributes from one single parent device.
+
+  looking at device '/devices/pci0000:00/0000:00:12.0/usb3/3-3/3-3:1.0/tty/ttyACM0':
+    KERNEL=="ttyACM0"
+    SUBSYSTEM=="tty"
+    DRIVER==""
+
+  looking at parent device '/devices/pci0000:00/0000:00:12.0/usb3/3-3/3-3:1.0':
+    KERNELS=="3-3:1.0"
+    SUBSYSTEMS=="usb"
+    DRIVERS=="cdc_acm"
+    ATTRS{authorized}=="1"
+    ATTRS{bAlternateSetting}==" 0"
+    ATTRS{bInterfaceClass}=="02"
+    ATTRS{bInterfaceNumber}=="00"
+    ATTRS{bInterfaceProtocol}=="01"
+    ATTRS{bInterfaceSubClass}=="02"
+    ATTRS{bNumEndpoints}=="01"
+    ATTRS{bmCapabilities}=="6"
+    ATTRS{supports_autosuspend}=="1"
+
+  looking at parent device '/devices/pci0000:00/0000:00:12.0/usb3/3-3':
+    KERNELS=="3-3"
+    SUBSYSTEMS=="usb"
+    DRIVERS=="usb"
+    ATTRS{authorized}=="1"
+    ATTRS{avoid_reset_quirk}=="0"
+    ATTRS{bConfigurationValue}=="1"
+    ATTRS{bDeviceClass}=="02"
+    ATTRS{bDeviceProtocol}=="00"
+    ATTRS{bDeviceSubClass}=="00"
+    ATTRS{bMaxPacketSize0}=="8"
+    ATTRS{bMaxPower}=="100mA"
+    ATTRS{bNumConfigurations}=="1"
+    ATTRS{bNumInterfaces}==" 2"
+    ATTRS{bcdDevice}=="0001"
+    ATTRS{bmAttributes}=="c0"
+    ATTRS{busnum}=="3"
+    ATTRS{configuration}==""
+    ATTRS{devnum}=="17"
+    ATTRS{devpath}=="3"
+    ATTRS{idProduct}=="0043"
+    ATTRS{idVendor}=="2341"
+    ATTRS{ltm_capable}=="no"
+    ATTRS{manufacturer}=="Arduino (www.arduino.cc)"
+    ATTRS{maxchild}=="0"
+    ATTRS{quirks}=="0x0"
+    ATTRS{removable}=="unknown"
+    ATTRS{rx_lanes}=="1"
+    ATTRS{serial}=="74037343236351F0F020"
+    ATTRS{speed}=="12"
+    ATTRS{tx_lanes}=="1"
+    ATTRS{urbnum}=="148"
+    ATTRS{version}==" 1.10"
+
+  looking at parent device '/devices/pci0000:00/0000:00:12.0/usb3':
+    KERNELS=="usb3"
+    SUBSYSTEMS=="usb"
+    DRIVERS=="usb"
+    ATTRS{authorized}=="1"
+    ATTRS{authorized_default}=="1"
+    ATTRS{avoid_reset_quirk}=="0"
+    ATTRS{bConfigurationValue}=="1"
+    ATTRS{bDeviceClass}=="09"
+    ATTRS{bDeviceProtocol}=="00"
+    ATTRS{bDeviceSubClass}=="00"
+    ATTRS{bMaxPacketSize0}=="64"
+    ATTRS{bMaxPower}=="0mA"
+    ATTRS{bNumConfigurations}=="1"
+    ATTRS{bNumInterfaces}==" 1"
+    ATTRS{bcdDevice}=="0503"
+    ATTRS{bmAttributes}=="e0"
+    ATTRS{busnum}=="3"
+    ATTRS{configuration}==""
+    ATTRS{devnum}=="1"
+    ATTRS{devpath}=="0"
+    ATTRS{idProduct}=="0001"
+    ATTRS{idVendor}=="1d6b"
+    ATTRS{interface_authorized_default}=="1"
+    ATTRS{ltm_capable}=="no"
+    ATTRS{manufacturer}=="Linux 5.3.0-28-generic ohci_hcd"
+    ATTRS{maxchild}=="5"
+    ATTRS{product}=="OHCI PCI host controller"
+    ATTRS{quirks}=="0x0"
+    ATTRS{removable}=="unknown"
+    ATTRS{rx_lanes}=="1"
+    ATTRS{serial}=="0000:00:12.0"
+    ATTRS{speed}=="12"
+    ATTRS{tx_lanes}=="1"
+    ATTRS{urbnum}=="441"
+    ATTRS{version}==" 1.10"
+
+  looking at parent device '/devices/pci0000:00/0000:00:12.0':
+    KERNELS=="0000:00:12.0"
+    SUBSYSTEMS=="pci"
+    DRIVERS=="ohci-pci"
+    ATTRS{ari_enabled}=="0"
+    ATTRS{broken_parity_status}=="0"
+    ATTRS{class}=="0x0c0310"
+    ATTRS{consistent_dma_mask_bits}=="32"
+    ATTRS{d3cold_allowed}=="0"
+    ATTRS{device}=="0x4397"
+    ATTRS{dma_mask_bits}=="32"
+    ATTRS{driver_override}=="(null)"
+    ATTRS{enable}=="1"
+    ATTRS{irq}=="18"
+    ATTRS{local_cpulist}=="0-1"
+    ATTRS{local_cpus}=="3"
+    ATTRS{msi_bus}=="1"
+    ATTRS{numa_node}=="-1"
+    ATTRS{revision}=="0x00"
+    ATTRS{subsystem_device}=="0x0543"
+    ATTRS{subsystem_vendor}=="0x1025"
+    ATTRS{vendor}=="0x1002"
+
+  looking at parent device '/devices/pci0000:00':
+    KERNELS=="pci0000:00"
+    SUBSYSTEMS==""
+    DRIVERS==""
 
