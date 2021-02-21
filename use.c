@@ -47,15 +47,18 @@ void set_blocking (int fd, int should_block)
 		printf ("error %d from tggetattr", errno);
 		return;
 	}
-	// tty.c_cc[VMIN]  = should_block ? 1 : 0;
-	tty.c_cc[VMIN] = 0;
-	tty.c_cc[VTIME] = 0;	// 0.5 seconds read timeout
+	tty.c_cc[VMIN]  = should_block ? 1 : 0;
+	tty.c_cc[VTIME] = 5;	// 0.5 seconds read timeout
 	if (tcsetattr (fd, TCSANOW, &tty) != 0)
 		printf ("error %d setting term attributes", errno);
 }
 
-int main (void) {
-	char *portname = "/dev/ttyACM0";
+int main (int argc, char **argv) {
+	char *portname;
+	if (argc == 2)
+		portname = argv[1];
+	else
+		portname = "/dev/ttyACM0";
 	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{

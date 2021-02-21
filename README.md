@@ -45,3 +45,6 @@ https://stackoverflow.com/questions/28836712/how-do-you-get-a-struct-device-for-
 
 """
 у меня вот тут есть вот такой вызов tty_register_device(tiny_tty_driver, i, NULL); И вместо NULL мне нужно передать указатель на struct device моего устройства. Вот как мне эту структуру вытащить, я не могу понять.
+
+"""
+https://elixir.bootlin.com/linux/latest/source/drivers/usb/class/cdc-acm.c

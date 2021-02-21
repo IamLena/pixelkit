@@ -61,7 +61,7 @@
  * Major and minor numbers.
  */
 
-#define ACM_TTY_MAJOR		166
+#define ACM_TTY_MAJOR		240
 #define ACM_TTY_MINORS		256
 
 /*

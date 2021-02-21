@@ -2,12 +2,12 @@
 
 Gamer gamer;
 char command[50];
-int i = 0;
+int i;
 
 void setup() {
   gamer.begin();
-//  Serial.begin(9600);
   Serial.begin(115200);
+  i = 0;
 }
 
 void loop() {
@@ -17,10 +17,10 @@ void loop() {
       i++;
   }
   command[i] = '\0';
-
   gamer.printString(command);
   gamer.updateDisplay();
-  Serial.print("get the message");
+  if (i != 0)
+    Serial.print("I've got a message.\n");
   delay(100);
   i = 0;
 }
