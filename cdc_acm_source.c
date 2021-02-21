@@ -2101,7 +2101,7 @@ static const struct usb_device_id acm_ids[] = {
 MODULE_DEVICE_TABLE(usb, acm_ids);
 
 static struct usb_driver acm_driver = {
-	.name =		"cdc_acm",
+	.name =		"my_cdc_acm",
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
 #ifdef CONFIG_PM
@@ -2148,6 +2148,7 @@ static const struct tty_operations acm_ops = {
 
 static int __init acm_init(void)
 {
+	printk(KERN_INFO "THIS IS MU MODULE\n");
 	int retval;
 	acm_tty_driver = alloc_tty_driver(ACM_TTY_MINORS);
 	if (!acm_tty_driver)
