@@ -62,7 +62,7 @@
  */
 
 #define ACM_TTY_MAJOR		240
-#define ACM_TTY_MINORS		1
+#define ACM_TTY_MINORS		256
 
 /*
  * Requests.
@@ -185,8 +185,8 @@ struct acm {
 //ends here
 
 
-#define DRIVER_AUTHOR "Luchina"
-#define DRIVER_DESC "My driver for printing message device"
+#define DRIVER_AUTHOR "Armin Fuerst, Pavel Machek, Johannes Erdfelt, Vojtech Pavlik, David Kubicek, Johan Hovold"
+#define DRIVER_DESC "USB Abstract Control Model driver for USB modems and ISDN adapters"
 
 static struct usb_driver acm_driver;
 static struct tty_driver *acm_tty_driver;
@@ -2148,20 +2148,20 @@ static const struct tty_operations acm_ops = {
 
 static int __init acm_init(void)
 {
-	printk(KERN_INFO "THIS IS MY MODULE INIT\n");
+	printk(KERN_INFO "THIS IS MU MODULE\n");
 	int retval;
 	acm_tty_driver = alloc_tty_driver(ACM_TTY_MINORS);
 	if (!acm_tty_driver)
 		return -ENOMEM;
-	acm_tty_driver->driver_name = "mydriver",
-	acm_tty_driver->name = "ttyLenas",
+	acm_tty_driver->driver_name = "acm",
+	acm_tty_driver->name = "ttyACM",
 	acm_tty_driver->major = ACM_TTY_MAJOR,
 	acm_tty_driver->minor_start = 0,
 	acm_tty_driver->type = TTY_DRIVER_TYPE_SERIAL,
 	acm_tty_driver->subtype = SERIAL_TYPE_NORMAL,
 	acm_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
 	acm_tty_driver->init_termios = tty_std_termios;
-	acm_tty_driver->init_termios.c_cflag = B115200 | CS8 | CREAD |
+	acm_tty_driver->init_termios.c_cflag = B9600 | CS8 | CREAD |
 								HUPCL | CLOCAL;
 	tty_set_operations(acm_tty_driver, &acm_ops);
 
@@ -2179,6 +2179,7 @@ static int __init acm_init(void)
 	}
 
 	printk(KERN_INFO KBUILD_MODNAME ": " DRIVER_DESC "\n");
+
 	return 0;
 }
 

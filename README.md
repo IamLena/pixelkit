@@ -48,3 +48,7 @@ https://stackoverflow.com/questions/28836712/how-do-you-get-a-struct-device-for-
 
 """
 https://elixir.bootlin.com/linux/latest/source/drivers/usb/class/cdc-acm.c
+
+"""
+unknown baud rate sometimes
+default cdc_acm gets dissconnected somehow, it shows used by 0

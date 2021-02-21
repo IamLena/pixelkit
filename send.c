@@ -11,6 +11,7 @@ int main (int argc, char **argv) {
 		portname = argv[1];
 	else
 		portname = "/dev/ttyACM0";
+	printf("writing to %s\n", portname);
 	int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
 	if (fd < 0)
 	{
