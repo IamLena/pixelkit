@@ -1836,6 +1836,8 @@ static int __init acm_init(void)
 	acm_tty_driver->init_termios.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
 	acm_tty_driver->init_termios.c_iflag &= ~(INPCK | ICRNL);
 	acm_tty_driver->init_termios.c_oflag &= ~(OPOST | ONLCR);
+	acm_tty_driver->init_termios.c_cc[VMIN] = 0;
+	// .c_cc[VMIN]
 
 	tty_set_operations(acm_tty_driver, &acm_ops);
 
