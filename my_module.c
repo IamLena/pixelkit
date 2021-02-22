@@ -17,6 +17,7 @@
 #include <asm/unaligned.h>
 #include <linux/idr.h>
 #include <linux/list.h>
+#include <linux/string.h>
 
 #ifndef CMSPAR
 # define CMSPAR			0
@@ -1831,13 +1832,16 @@ static int __init acm_init(void)
 	acm_tty_driver->type = TTY_DRIVER_TYPE_SERIAL,
 	acm_tty_driver->subtype = SERIAL_TYPE_NORMAL,
 	acm_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
-	acm_tty_driver->init_termios = tty_std_termios;
-	acm_tty_driver->init_termios.c_cflag = (B9600 | CS8 | CREAD | CLOCAL) & (~CSIZE) & (~CSTOPB);
-	acm_tty_driver->init_termios.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
-	acm_tty_driver->init_termios.c_iflag &= ~(INPCK | ICRNL);
-	acm_tty_driver->init_termios.c_oflag &= ~(OPOST | ONLCR);
-	acm_tty_driver->init_termios.c_cc[VMIN] = 0;
-	// .c_cc[VMIN]
+	// acm_tty_driver->init_termios = tty_std_termios;
+	memset(&(acm_tty_driver->init_termios), 0, sizeof(struct termios));
+	acm_tty_driver->init_termios.c_cflag |= (CREAD | CLOCAL);
+	acm_tty_driver->init_termios.c_cflag &= ~CSIZE;
+	acm_tty_driver->init_termios.c_cflag |= CS8;
+	acm_tty_driver->init_termios.c_cflag &= ~CSTOPB;
+
+	acm_tty_driver->init_termios.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+	acm_tty_driver->init_termios.c_iflag &= ~(INPCK);
+	acm_tty_driver->init_termios.c_oflag &= ~OPOST;
 
 	tty_set_operations(acm_tty_driver, &acm_ops);
 
