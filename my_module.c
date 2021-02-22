@@ -1812,16 +1812,6 @@ static int acm_pre_reset(struct usb_interface *intf)
 	return 0;
 }
 
-#define NOKIA_PCSUITE_ACM_INFO(x) \
-		USB_DEVICE_AND_INTERFACE_INFO(0x0421, x, \
-		USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM, \
-		USB_CDC_ACM_PROTO_VENDOR)
-
-#define SAMSUNG_PCSUITE_ACM_INFO(x) \
-		USB_DEVICE_AND_INTERFACE_INFO(0x04e7, x, \
-		USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM, \
-		USB_CDC_ACM_PROTO_VENDOR)
-
 /*
  * USB driver structure.
  */
