@@ -52,3 +52,10 @@ https://elixir.bootlin.com/linux/latest/source/drivers/usb/class/cdc-acm.c
 """
 unknown baud rate sometimes
 default cdc_acm gets dissconnected somehow, it shows used by 0
+
+""
+look /proc/devices
+
+
+usbmon
+https://www.kernel.org/doc/html/latest/usb/usbmon.html
