@@ -1775,17 +1775,17 @@ static struct usb_driver acm_driver = {
 	.name =		"my_cdc_acm",
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
-// #ifdef CONFIG_PM
-// 	.suspend =	acm_suspend,
-// 	.resume =	acm_resume,
-// 	.reset_resume =	acm_reset_resume,
-// #endif
-// 	.pre_reset =	acm_pre_reset,
+#ifdef CONFIG_PM
+	.suspend =	acm_suspend,
+	.resume =	acm_resume,
+	.reset_resume =	acm_reset_resume,
+#endif
+	.pre_reset =	acm_pre_reset,
 	.id_table =	acm_ids,
-// #ifdef CONFIG_PM
-// 	.supports_autosuspend = 1,
-// #endif
-// 	.disable_hub_initiated_lpm = 1,
+#ifdef CONFIG_PM
+	.supports_autosuspend = 1,
+#endif
+	.disable_hub_initiated_lpm = 1,
 };
 
 /*
