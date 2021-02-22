@@ -1833,9 +1833,9 @@ static int __init acm_init(void)
 	acm_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
 	acm_tty_driver->init_termios = tty_std_termios;
 	acm_tty_driver->init_termios.c_cflag = (B9600 | CS8 | CREAD | CLOCAL) & (~CSIZE) & (~CSTOPB);
-	acm_tty_driver->init_termios.c_lflag = ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
-	acm_tty_driver->init_termios.c_iflag = ~(INPCK | ICRNL);
-	acm_tty_driver->init_termios.c_oflag = ~(OPOST | ONLCR);
+	acm_tty_driver->init_termios.c_lflag &= ~(ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOKE);
+	acm_tty_driver->init_termios.c_iflag &= ~(INPCK | ICRNL);
+	acm_tty_driver->init_termios.c_oflag &= ~(OPOST | ONLCR);
 	acm_tty_driver->init_termios.c_cc[VMIN] = 0;
 	// .c_cc[VMIN]
 
