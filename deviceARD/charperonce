@@ -1,0 +1,30 @@
+#include "Gamer.h"
+
+Gamer gamer;
+char incomingByte; // for incoming serial data
+char str[2];
+
+void setup() {
+  gamer.begin();
+  Serial.begin(9600); // opens serial port, sets data rate to 9600 bps
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB
+  }
+}
+
+void loop() {
+  // reply only when you receive data:
+  if (Serial.available() > 0) {
+    // read the incoming byte:
+    incomingByte = Serial.read();
+    gamer.clear();
+    str[0] = incomingByte;
+    str[1] = '\0';
+    gamer.printString(str);
+    gamer.updateDisplay();
+
+    // say what you got:
+    Serial.print("I received: ");
+    Serial.println(incomingByte, DEC);
+  }
+}
