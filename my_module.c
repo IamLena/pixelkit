@@ -1644,10 +1644,6 @@ static int acm_pre_reset(struct usb_interface *intf)
 	return 0;
 }
 
-/*
- * USB driver structure.
- */
-
 static const struct usb_device_id acm_ids[] = {
 	{ USB_DEVICE(0x2341, 0x0043) },
 	{ }
@@ -1664,12 +1660,10 @@ static struct usb_driver acm_driver = {
 // 	.suspend =	acm_suspend,
 // 	.resume =	acm_resume,
 // 	.reset_resume =	acm_reset_resume,
-// #endif
-// 	.pre_reset =	acm_pre_reset,
-// #ifdef CONFIG_PM
 // 	.supports_autosuspend = 1,
 // #endif
-// 	.disable_hub_initiated_lpm = 1,
+	.pre_reset =	acm_pre_reset,
+	.disable_hub_initiated_lpm = 1,
 };
 
 static const struct tty_operations acm_ops = {
