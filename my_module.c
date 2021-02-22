@@ -1810,7 +1810,7 @@ static const struct tty_operations acm_ops = {
 	.tiocmset =		acm_tty_tiocmset,
 	.get_serial =		get_serial_info,
 	.set_serial =		set_serial_info,
-	.get_icount =		acm_tty_get_icount,
+	// .get_icount =		acm_tty_get_icount,
 };
 
 /*
