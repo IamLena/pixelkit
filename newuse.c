@@ -2,15 +2,21 @@
 #include <string.h>
 #include <fcntl.h>
 #include <sys/select.h>
-#include <termios.h> 
+#include <termios.h>
 #include <unistd.h>
-
-//char tx[] = {0x7F, 0x03, 0x00, 0x00, 0x00, 0x01, 0x8E, 0x14};
 
 char *tx = "hello world!";
 
-int main()
+int main(int argc, char **argv)
 {
+    printf("usage: ./senddata [message [port_path]]\n");
+    char *message = "";
+    char *portPath = "/dev/ttyACM0";
+    if (argc == 2 || argc == 3)
+        message = argv[1];
+    if (argc == 3)
+        portPath = argv[2];
+
     int fd;
     fd_set fs;
     struct timeval timeout;
@@ -30,19 +36,7 @@ int main()
         perror("Unable to open port");
     }
 
-    // clear all file status flags
-    fcntl(fd, F_SETFL, 0);
-
-
-#if 0
-struct termios {
-    tcflag_t c_iflag;      /* input modes */
-    tcflag_t c_oflag;      /* output modes */
-    tcflag_t c_cflag;      /* control modes */
-    tcflag_t c_lflag;      /* local modes */
-    cc_t     c_cc[NCCS];   /* special characters */
-};
-#endif 
+    fcntl(fd, F_SETFL, 0); // clear all file status flags
 
     memset(&term, 0, sizeof(struct termios));
 
@@ -60,7 +54,6 @@ struct termios {
     term.c_cflag &= ~CSIZE;
     /* CS8 - 8 битные символы */
     term.c_cflag |= CS8;
-
     /* CSTOPB - при 1 - два стоп бита, при 0 - один */
     term.c_cflag &= ~CSTOPB;
 
@@ -77,16 +70,14 @@ struct termios {
     term.c_oflag &= ~OPOST;
 
     /*
-    TCSANOW - примернить изменения сейчасже
+    TCSANOW - примернить изменения сейчас же
     TCSADRAIN - применить после передачи всех текущих данных
     TCSAFLUSH - приемнить после окончания передачи, все принятые но не считанные данные очистить
     */
     if (tcsetattr(fd, TCSANOW, &term) < 0)
     {
-        perror("Unable to set port parameters");     
+        perror("Unable to set port parameters");
     }
-
-
 
     write(fd, tx, 8);
 
@@ -95,25 +86,21 @@ struct termios {
     FD_ZERO (&fs);
     FD_SET(fd, &fs);
 
-    res = select ( fd+1 , &fs, NULL, NULL, &timeout );
+    // res = select ( fd+1 , &fs, NULL, NULL, &timeout );
 
-    if (res == 0) {
-        perror("Timeout occurs");
-    } else if (res > 0) {
-        if ( FD_ISSET(fd, &fs) ) {
-            memset(buf,0x00,sizeof(buf));
-            res = read(fd,buf,512);
-            printf("Read %d bytes:\n", res);
-            for (i=0;i<res;i++)
-                printf("%c ", buf[i]);
-            printf("\n");
-        }
-    }
-        
+    // if (res == 0) {
+    //     perror("Timeout occurs");
+    // } else if (res > 0) {
+    //     if ( FD_ISSET(fd, &fs) ) {
+    //         memset(buf,0x00,sizeof(buf));
+    //         res = read(fd,buf,512);
+    //         printf("Read %d bytes:\n", res);
+    //         for (i=0;i<res;i++)
+    //             printf("%c ", buf[i]);
+    //         printf("\n");
+    //     }
+    // }
+
+    // to clode fd ?
+
 }
-
-/*
-# ./serial
-Read 7 bytes:
-7f 03 02 04 80 93 2e
-*/
