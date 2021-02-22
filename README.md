@@ -59,3 +59,6 @@ look /proc/devices
 
 usbmon
 https://www.kernel.org/doc/html/latest/usb/usbmon.html
+
+
+blablacode.ru/linux/584
