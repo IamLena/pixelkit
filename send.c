@@ -31,43 +31,43 @@ int main(int argc, char **argv)
 
 	fcntl(fd, F_SETFL, 0); // clear all file status flags
 
-	memset(&term, 0, sizeof(struct termios));
-	if ((cfsetispeed(&term, B9600) < 0) ||
-		(cfsetospeed(&term, B9600) < 0)) {
-			perror("Unable to set baudrate");
-	}
+	// memset(&term, 0, sizeof(struct termios));
+	// if ((cfsetispeed(&term, B9600) < 0) ||
+	// 	(cfsetospeed(&term, B9600) < 0)) {
+	// 		perror("Unable to set baudrate");
+	// }
 
-	/*
-	CREAD - включить прием
-	CLOCAL - игнорировать управление линиями с помошью
-	CSIZE - маска размера символа
-	CS8 - 8 битные символы
-	CSTOPB - при 1 - два стоп бита, при 0 - один
-	*/
-	term.c_cflag |= (CREAD | CLOCAL);
-	term.c_cflag &= ~CSIZE;
-	term.c_cflag |= CS8;
-	term.c_cflag &= ~CSTOPB;
+	// /*
+	// CREAD - включить прием
+	// CLOCAL - игнорировать управление линиями с помошью
+	// CSIZE - маска размера символа
+	// CS8 - 8 битные символы
+	// CSTOPB - при 1 - два стоп бита, при 0 - один
+	// */
+	// term.c_cflag |= (CREAD | CLOCAL);
+	// term.c_cflag &= ~CSIZE;
+	// term.c_cflag |= CS8;
+	// term.c_cflag &= ~CSTOPB;
 
-	/*
-	ICANON - канонический режим
-	ECHO - эхо принятых символов
-	ECHOE - удаление предыдущих символов по ERASE, слов по WERASE
-	ISIG - реагировать на управляющие символы остановки, выхода, прерывания
-	INPCK - вкл. проверку четности
-	OPOST - режим вывода по умолчанию
-	*/
-	term.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	term.c_iflag &= ~(INPCK);
-	term.c_oflag &= ~OPOST;
+	// /*
+	// ICANON - канонический режим
+	// ECHO - эхо принятых символов
+	// ECHOE - удаление предыдущих символов по ERASE, слов по WERASE
+	// ISIG - реагировать на управляющие символы остановки, выхода, прерывания
+	// INPCK - вкл. проверку четности
+	// OPOST - режим вывода по умолчанию
+	// */
+	// term.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+	// term.c_iflag &= ~(INPCK);
+	// term.c_oflag &= ~OPOST;
 
-	/*
-	TCSANOW - примернить изменения сейчас же
-	TCSADRAIN - применить после передачи всех текущих данных
-	TCSAFLUSH - приемнить после окончания передачи, все принятые но не считанные данные очистить
-	*/
-	if (tcsetattr(fd, TCSANOW, &term) < 0)
-		perror("Unable to set port parameters");
+	// /*
+	// TCSANOW - примернить изменения сейчас же
+	// TCSADRAIN - применить после передачи всех текущих данных
+	// TCSAFLUSH - приемнить после окончания передачи, все принятые но не считанные данные очистить
+	// */
+	// if (tcsetattr(fd, TCSANOW, &term) < 0)
+	// 	perror("Unable to set port parameters");
 
 	writeres = write(fd, message, strlen(message));
 	if (writeres == -1)
