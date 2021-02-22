@@ -1827,6 +1827,7 @@ static int acm_pre_reset(struct usb_interface *intf)
  */
 
 static const struct usb_device_id acm_ids[] = {
+	{ USB_DEVICE(0x2341, 0x0043) },
 	/* quirky and broken devices */
 	{ USB_DEVICE(0x0424, 0x274e), /* Microchip Technology, Inc. (formerly SMSC) */
 	  .driver_info = DISABLE_ECHO, }, /* DISABLE ECHO in termios flag */
