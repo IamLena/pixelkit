@@ -1797,14 +1797,14 @@ static const struct tty_operations acm_ops = {
 	.open =			acm_tty_open,					//Required method
 	.close =		acm_tty_close,					//Required method
 	.cleanup =		acm_tty_cleanup,
-	.hangup =		acm_tty_hangup,
+	// .hangup =		acm_tty_hangup,
 	.write =		acm_tty_write,
 	.write_room =	acm_tty_write_room,				//Required if write method is provided
 	.ioctl =		acm_tty_ioctl,
 	// .throttle =		acm_tty_throttle,
 	// .unthrottle =		acm_tty_unthrottle,
 	.chars_in_buffer =	acm_tty_chars_in_buffer,
-	.break_ctl =		acm_tty_break_ctl,
+	// .break_ctl =		acm_tty_break_ctl,
 	.set_termios =		acm_tty_set_termios,
 	.tiocmget =		acm_tty_tiocmget,
 	.tiocmset =		acm_tty_tiocmset,
@@ -1832,19 +1832,10 @@ static int __init acm_init(void)
 	acm_tty_driver->subtype = SERIAL_TYPE_NORMAL,
 	acm_tty_driver->flags = TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV;
 	acm_tty_driver->init_termios = tty_std_termios;
-	acm_tty_driver->init_termios.c_cflag = B9600 | CS8 | CREAD | CLOCAL & ~CSIZE & ~CSTOPB;
+	acm_tty_driver->init_termios.c_cflag = (B9600 | CS8 | CREAD | CLOCAL) & (~CSIZE) & (~CSTOPB);
 	acm_tty_driver->init_termios.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
 	acm_tty_driver->init_termios.c_iflag &= ~(INPCK);
 	acm_tty_driver->init_termios.c_oflag &= ~OPOST;
-	// acm_tty_driver->init_termios.c_cflag /= HUPCL;
-	// from send.c configs
-	// term.c_cflag |= (CREAD | CLOCAL);
-	// 	term.c_cflag &= ~CSIZE;
-	// 	term.c_cflag |= CS8;
-	// 	term.c_cflag &= ~CSTOPB;
-	// term.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-	// term.c_iflag &= ~(INPCK);
-	// term.c_oflag &= ~OPOST;
 
 	tty_set_operations(acm_tty_driver, &acm_ops);
 

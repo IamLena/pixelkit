@@ -65,3 +65,7 @@ blablacode.ru/linux/584
 
 ttyops
 https://github.com/spotify/linux/blob/master/include/linux/tty_driver.h
+
+
+tty flags
+https://www.gnu.org/software/libc/manual/html_node/Local-Modes.html
