@@ -62,3 +62,6 @@ https://www.kernel.org/doc/html/latest/usb/usbmon.html
 
 
 blablacode.ru/linux/584
+
+ttyops
+https://github.com/spotify/linux/blob/master/include/linux/tty_driver.h
