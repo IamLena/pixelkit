@@ -850,13 +850,6 @@ static void acm_tty_cleanup(struct tty_struct *tty)
 	tty_port_put(&acm->port);
 }
 
-static void acm_tty_hangup(struct tty_struct *tty)
-{
-	struct acm *acm = tty->driver_data;
-
-	tty_port_hangup(&acm->port);
-}
-
 static void acm_tty_close(struct tty_struct *tty, struct file *filp)
 {
 	struct acm *acm = tty->driver_data;
@@ -928,52 +921,6 @@ static int acm_tty_write_room(struct tty_struct *tty)
 	return acm_wb_is_avail(acm) ? acm->writesize : 0;
 }
 
-static int acm_tty_chars_in_buffer(struct tty_struct *tty)
-{
-	struct acm *acm = tty->driver_data;
-	/*
-	 * if the device was unplugged then any remaining characters fell out
-	 * of the connector ;)
-	 */
-	if (acm->disconnected)
-		return 0;
-	/*
-	 * This is inaccurate (overcounts), but it works.
-	 */
-	return (ACM_NW - acm_wb_is_avail(acm)) * acm->writesize;
-}
-
-static void acm_tty_throttle(struct tty_struct *tty)
-{
-	struct acm *acm = tty->driver_data;
-
-	set_bit(ACM_THROTTLED, &acm->flags);
-}
-
-static void acm_tty_unthrottle(struct tty_struct *tty)
-{
-	struct acm *acm = tty->driver_data;
-
-	clear_bit(ACM_THROTTLED, &acm->flags);
-
-	/* Matches the smp_mb__after_atomic() in acm_read_bulk_callback(). */
-	smp_mb();
-
-	acm_submit_read_urbs(acm, GFP_KERNEL);
-}
-
-static int acm_tty_break_ctl(struct tty_struct *tty, int state)
-{
-	struct acm *acm = tty->driver_data;
-	int retval;
-
-	retval = acm_send_break(acm, state ? 0xffff : 0);
-	if (retval < 0)
-		dev_dbg(&acm->control->dev,
-			"%s - send break failed\n", __func__);
-	return retval;
-}
-
 static int acm_tty_tiocmget(struct tty_struct *tty)
 {
 	struct acm *acm = tty->driver_data;
@@ -1003,54 +950,6 @@ static int acm_tty_tiocmset(struct tty_struct *tty,
 	if (acm->ctrlout == newctrl)
 		return 0;
 	return acm_set_control(acm, acm->ctrlout = newctrl);
-}
-
-static int get_serial_info(struct tty_struct *tty, struct serial_struct *ss)
-{
-	struct acm *acm = tty->driver_data;
-
-	ss->xmit_fifo_size = acm->writesize;
-	ss->baud_base = le32_to_cpu(acm->line.dwDTERate);
-	ss->close_delay	= jiffies_to_msecs(acm->port.close_delay) / 10;
-	ss->closing_wait = acm->port.closing_wait == ASYNC_CLOSING_WAIT_NONE ?
-				ASYNC_CLOSING_WAIT_NONE :
-				jiffies_to_msecs(acm->port.closing_wait) / 10;
-	return 0;
-}
-
-static int set_serial_info(struct tty_struct *tty, struct serial_struct *ss)
-{
-	struct acm *acm = tty->driver_data;
-	unsigned int closing_wait, close_delay;
-	unsigned int old_closing_wait, old_close_delay;
-	int retval = 0;
-
-	close_delay = msecs_to_jiffies(ss->close_delay * 10);
-	closing_wait = ss->closing_wait == ASYNC_CLOSING_WAIT_NONE ?
-			ASYNC_CLOSING_WAIT_NONE :
-			msecs_to_jiffies(ss->closing_wait * 10);
-
-	/* we must redo the rounding here, so that the values match */
-	old_close_delay	= jiffies_to_msecs(acm->port.close_delay) / 10;
-	old_closing_wait = acm->port.closing_wait == ASYNC_CLOSING_WAIT_NONE ?
-				ASYNC_CLOSING_WAIT_NONE :
-				jiffies_to_msecs(acm->port.closing_wait) / 10;
-
-	mutex_lock(&acm->port.mutex);
-
-	if (!capable(CAP_SYS_ADMIN)) {
-		if ((ss->close_delay != old_close_delay) ||
-		    (ss->closing_wait != old_closing_wait))
-			retval = -EPERM;
-		else
-			retval = -EOPNOTSUPP;
-	} else {
-		acm->port.close_delay  = close_delay;
-		acm->port.closing_wait = closing_wait;
-	}
-
-	mutex_unlock(&acm->port.mutex);
-	return retval;
 }
 
 static int wait_serial_change(struct acm *acm, unsigned long arg)
@@ -1094,22 +993,6 @@ static int wait_serial_change(struct acm *acm, unsigned long arg)
 
 
 	return rv;
-}
-
-static int acm_tty_get_icount(struct tty_struct *tty,
-					struct serial_icounter_struct *icount)
-{
-	struct acm *acm = tty->driver_data;
-
-	icount->dsr = acm->iocount.dsr;
-	icount->rng = acm->iocount.rng;
-	icount->dcd = acm->iocount.dcd;
-	icount->frame = acm->iocount.frame;
-	icount->overrun = acm->iocount.overrun;
-	icount->parity = acm->iocount.parity;
-	icount->brk = acm->iocount.brk;
-
-	return 0;
 }
 
 static int acm_tty_ioctl(struct tty_struct *tty,
@@ -1795,23 +1678,15 @@ static struct usb_driver acm_driver = {
 
 static const struct tty_operations acm_ops = {
 	.install =		acm_tty_install,
-	.open =			acm_tty_open,					//Required method
-	.close =		acm_tty_close,					//Required method
+	.open =			acm_tty_open,
+	.close =		acm_tty_close,
 	.cleanup =		acm_tty_cleanup,
-	// .hangup =		acm_tty_hangup,
 	.write =		acm_tty_write,
-	.write_room =	acm_tty_write_room,				//Required if write method is provided
+	.write_room =	acm_tty_write_room,
 	.ioctl =		acm_tty_ioctl,
-	// .throttle =		acm_tty_throttle,
-	// .unthrottle =		acm_tty_unthrottle,
-	// .chars_in_buffer =	acm_tty_chars_in_buffer,
-	// .break_ctl =		acm_tty_break_ctl,
-	.set_termios =		acm_tty_set_termios,
+	.set_termios =	acm_tty_set_termios,
 	.tiocmget =		acm_tty_tiocmget,
-	.tiocmset =		acm_tty_tiocmset,
-	// .get_serial =		get_serial_info,
-	// .set_serial =		set_serial_info,
-	// .get_icount =		acm_tty_get_icount,
+	.tiocmset =		acm_tty_tiocmset
 };
 
 /*
