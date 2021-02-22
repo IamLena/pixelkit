@@ -69,3 +69,4 @@ https://github.com/spotify/linux/blob/master/include/linux/tty_driver.h
 
 tty flags
 https://www.gnu.org/software/libc/manual/html_node/Local-Modes.html
+https://www.gnu.org/software/coreutils/manual/html_node/Input.html#Input
