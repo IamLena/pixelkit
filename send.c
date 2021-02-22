@@ -18,8 +18,10 @@ int main (int argc, char **argv) {
 		printf ("error %d opening %s: %s", errno, portname, strerror(errno));
 		return 1;
 	}
+	printf("fd = %d\n", fd);
 	printf("openned; sending msg\n");
-	write (fd, "hello!\n", 7);				// send 7 character greeting
+	int res = write (fd, "hello!\n", 7);				// send 7 character greeting
+	printf("res = %d\n", res);
 	usleep ((7 + 25) * 100); // sleep enough to transmit the 7 plus receive 25: approx 100 uS per char
 	printf("message sent\n");
 	close(fd);
