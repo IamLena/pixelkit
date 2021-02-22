@@ -1659,22 +1659,18 @@ static struct usb_driver acm_driver = {
 	.name =		"my_cdc_acm",
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
-#ifdef CONFIG_PM
-	.suspend =	acm_suspend,
-	.resume =	acm_resume,
-	.reset_resume =	acm_reset_resume,
-#endif
-	.pre_reset =	acm_pre_reset,
 	.id_table =	acm_ids,
-#ifdef CONFIG_PM
-	.supports_autosuspend = 1,
-#endif
-	.disable_hub_initiated_lpm = 1,
+// #ifdef CONFIG_PM
+// 	.suspend =	acm_suspend,
+// 	.resume =	acm_resume,
+// 	.reset_resume =	acm_reset_resume,
+// #endif
+// 	.pre_reset =	acm_pre_reset,
+// #ifdef CONFIG_PM
+// 	.supports_autosuspend = 1,
+// #endif
+// 	.disable_hub_initiated_lpm = 1,
 };
-
-/*
- * TTY driver structures.
- */
 
 static const struct tty_operations acm_ops = {
 	.install =		acm_tty_install,
@@ -1689,14 +1685,10 @@ static const struct tty_operations acm_ops = {
 	.tiocmset =		acm_tty_tiocmset
 };
 
-/*
- * Init / exit.
- */
-
 static int __init acm_init(void)
 {
-	printk(KERN_INFO "THIS IS MU MODULE\n");
 	int retval;
+	printk(KERN_INFO "THIS IS MY MODULE\n");
 	acm_tty_driver = alloc_tty_driver(ACM_TTY_MINORS);
 	if (!acm_tty_driver)
 		return -ENOMEM;
