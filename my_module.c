@@ -1793,7 +1793,7 @@ static struct usb_driver acm_driver = {
  */
 
 static const struct tty_operations acm_ops = {
-	.install =		acm_tty_install,
+	// .install =		acm_tty_install,
 	.open =			acm_tty_open,
 	.close =		acm_tty_close,
 	.cleanup =		acm_tty_cleanup,
