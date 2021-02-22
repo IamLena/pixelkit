@@ -18,54 +18,25 @@
 #include <linux/idr.h>
 #include <linux/list.h>
 
-// #include "cdc-acm.h"
-
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- * Includes for cdc-acm.c
- *
- * Mainly take from usbnet's cdc-ether part
- *
- */
-
-/*
- * CMSPAR, some architectures can't have space and mark parity.
- */
-
 #ifndef CMSPAR
-#define CMSPAR			0
+# define CMSPAR			0
 #endif
-
-/*
- * Major and minor numbers.
- */
 
 #define ACM_TTY_MAJOR		240
 #define ACM_TTY_MINORS		1
 
-/*
- * Requests.
- */
-
+// Requests.
 #define USB_RT_ACM		(USB_TYPE_CLASS | USB_RECIP_INTERFACE)
 
-/*
- * Output control lines.
- */
-
+// Output control lines.
 #define ACM_CTRL_DTR		0x01
 #define ACM_CTRL_RTS		0x02
 
-/*
- * Input control lines and line errors.
- */
-
+// Input control lines and line errors.
 #define ACM_CTRL_DCD		0x01
 #define ACM_CTRL_DSR		0x02
 #define ACM_CTRL_BRK		0x04
-#define ACM_CTRL_RI		0x08
-
+#define ACM_CTRL_RI			0x08
 #define ACM_CTRL_FRAMING	0x10
 #define ACM_CTRL_PARITY		0x20
 #define ACM_CTRL_OVERRUN	0x40
@@ -104,16 +75,16 @@ struct acm_rb {
 
 struct acm {
 	struct usb_device *dev;				/* the corresponding usb device */
-	struct usb_interface *control;			/* control interface */
+	struct usb_interface *control;		/* control interface */
 	struct usb_interface *data;			/* data interface */
-	unsigned in, out;				/* i/o pipes */
+	unsigned in, out;					/* i/o pipes */
 	struct tty_port port;			 	/* our tty port data */
 	struct urb *ctrlurb;				/* urbs */
-	u8 *ctrl_buffer;				/* buffers of urbs */
+	u8 *ctrl_buffer;					/* buffers of urbs */
 	dma_addr_t ctrl_dma;				/* dma handles of buffers */
-	u8 *country_codes;				/* country codes from device */
-	unsigned int country_code_size;			/* size of this buffer */
-	unsigned int country_rel_date;			/* release date of version */
+	u8 *country_codes;					/* country codes from device */
+	unsigned int country_code_size;		/* size of this buffer */
+	unsigned int country_rel_date;		/* release date of version */
 	struct acm_wb wb[ACM_NW];
 	unsigned long read_urbs_free;
 	struct urb *read_urbs[ACM_NR];
@@ -132,21 +103,21 @@ struct acm {
 #		define EVENT_RX_STALL	1
 #		define ACM_THROTTLED	2
 #		define ACM_ERROR_DELAY	3
-	unsigned long urbs_in_error_delay;		/* these need to be restarted after a delay */
-	struct usb_cdc_line_coding line;		/* bits, stop, parity */
-	struct delayed_work dwork;		        /* work queue entry for various purposes */
+	unsigned long urbs_in_error_delay;	/* these need to be restarted after a delay */
+	struct usb_cdc_line_coding line;	/* bits, stop, parity */
+	struct delayed_work dwork;			/* work queue entry for various purposes */
 	unsigned int ctrlin;				/* input control lines (DCD, DSR, RI, break, overruns) */
 	unsigned int ctrlout;				/* output control lines (DTR, RTS) */
-	struct async_icount iocount;			/* counters for control line changes */
-	struct async_icount oldcount;			/* for comparison of counter */
+	struct async_icount iocount;		/* counters for control line changes */
+	struct async_icount oldcount;		/* for comparison of counter */
 	wait_queue_head_t wioctl;			/* for ioctl */
 	unsigned int writesize;				/* max packet size for the output bulk endpoint */
-	unsigned int readsize,ctrlsize;			/* buffer sizes for freeing */
-	unsigned int minor;				/* acm minor number */
+	unsigned int readsize,ctrlsize;		/* buffer sizes for freeing */
+	unsigned int minor;					/* acm minor number */
 	unsigned char clocal;				/* termios CLOCAL */
 	unsigned int ctrl_caps;				/* control capabilities from the class specific header */
 	unsigned int susp_count;			/* number of suspended interfaces */
-	unsigned int combined_interfaces:1;		/* control and data collapsed */
+	unsigned int combined_interfaces:1;	/* control and data collapsed */
 	u8 bInterval;
 	struct usb_anchor delayed;			/* writes queued for a device about to be woken */
 	unsigned long quirks;
@@ -162,11 +133,8 @@ struct acm {
 #define SEND_ZERO_PACKET		BIT(6)
 #define DISABLE_ECHO			BIT(7)
 
-//ends here
-
-
-#define DRIVER_AUTHOR "Armin Fuerst, Pavel Machek, Johannes Erdfelt, Vojtech Pavlik, David Kubicek, Johan Hovold"
-#define DRIVER_DESC "USB Abstract Control Model driver for USB modems and ISDN adapters"
+#define DRIVER_AUTHOR "Luchina"
+#define DRIVER_DESC "driver for ardruino uno device to print messages"
 
 static struct usb_driver acm_driver;
 static struct tty_driver *acm_tty_driver;
