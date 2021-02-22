@@ -1656,14 +1656,14 @@ static struct usb_driver acm_driver = {
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
 	.id_table =	acm_ids,
-// #ifdef CONFIG_PM
-// 	.suspend =	acm_suspend,
-// 	.resume =	acm_resume,
-// 	.reset_resume =	acm_reset_resume,
-// 	.supports_autosuspend = 1,
-// #endif
-	.pre_reset =	acm_pre_reset,
-	.disable_hub_initiated_lpm = 1,
+#ifdef CONFIG_PM
+	.suspend =	acm_suspend,
+	.resume =	acm_resume,
+	.reset_resume =	acm_reset_resume,
+	.supports_autosuspend = 1,
+#endif
+	// .pre_reset =	acm_pre_reset,
+	// .disable_hub_initiated_lpm = 1,
 };
 
 static const struct tty_operations acm_ops = {
