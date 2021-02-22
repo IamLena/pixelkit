@@ -1634,16 +1634,6 @@ static int acm_reset_resume(struct usb_interface *intf)
 
 #endif /* CONFIG_PM */
 
-static int acm_pre_reset(struct usb_interface *intf)
-{
-	struct acm *acm = usb_get_intfdata(intf);
-
-	clear_bit(EVENT_RX_STALL, &acm->flags);
-	acm->nb_index = 0; /* pending control transfers are lost */
-
-	return 0;
-}
-
 static const struct usb_device_id acm_ids[] = {
 	{ USB_DEVICE(0x2341, 0x0043) },
 	{ }
@@ -1662,8 +1652,6 @@ static struct usb_driver acm_driver = {
 	.reset_resume =	acm_reset_resume,
 	.supports_autosuspend = 1,
 #endif
-	// .pre_reset =	acm_pre_reset,
-	// .disable_hub_initiated_lpm = 1,
 };
 
 static const struct tty_operations acm_ops = {
