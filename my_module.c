@@ -1102,6 +1102,7 @@ static int acm_write_buffers_alloc(struct acm *acm)
 
 static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
+	printk(KERN_INFO "acm_probe called\n");
 	struct usb_cdc_union_desc *union_header = NULL;
 	struct usb_cdc_call_mgmt_descriptor *cmgmd = NULL;
 	unsigned char *buffer = intf->altsetting->extra;
@@ -1206,6 +1207,7 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 			return -EINVAL;
 		}
 look_for_collapsed_interface:
+		printk(KERN_INFO "look_for_collapsed_interface\n");
 		res = usb_find_common_endpoints(data_interface->cur_altsetting,
 				&epread, &epwrite, &epctrl, NULL);
 		if (res)
