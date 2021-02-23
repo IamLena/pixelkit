@@ -268,21 +268,6 @@ static int acm_wb_alloc(struct acm *acm)
 	}
 }
 
-// static int acm_wb_is_avail(struct acm *acm)
-// {
-// 	printk(KERN_INFO "acm_wb_is_avail called\n");
-// 	int i, n;
-// 	unsigned long flags;
-
-// 	n = ACM_NW;
-// 	spin_lock_irqsave(&acm->write_lock, flags);
-// 	for (i = 0; i < ACM_NW; i++)
-// 		if(acm->wb[i].use)
-// 			n--;
-// 	spin_unlock_irqrestore(&acm->write_lock, flags);
-// 	return n;
-// }
-
 /*
  * Finish write. Caller must hold acm->write_lock
  */
@@ -360,75 +345,6 @@ static ssize_t iCountryCodeRelDate_show
 }
 
 static DEVICE_ATTR_RO(iCountryCodeRelDate);
-/*
- * Interrupt handlers for various ACM device responses
- */
-
-// static void acm_process_notification(struct acm *acm, unsigned char *buf)
-// {
-// 	printk(KERN_INFO "acm_process_notification called\n");
-// 	int newctrl;
-// 	int difference;
-// 	unsigned long flags;
-// 	struct usb_cdc_notification *dr = (struct usb_cdc_notification *)buf;
-// 	unsigned char *data = buf + sizeof(struct usb_cdc_notification);
-
-// 	switch (dr->bNotificationType) {
-// 	case USB_CDC_NOTIFY_NETWORK_CONNECTION:
-// 		dev_dbg(&acm->control->dev,
-// 			"%s - network connection: %d\n", __func__, dr->wValue);
-// 		break;
-
-// 	case USB_CDC_NOTIFY_SERIAL_STATE:
-// 		if (le16_to_cpu(dr->wLength) != 2) {
-// 			dev_dbg(&acm->control->dev,
-// 				"%s - malformed serial state\n", __func__);
-// 			break;
-// 		}
-
-// 		newctrl = get_unaligned_le16(data);
-// 		dev_dbg(&acm->control->dev,
-// 			"%s - serial state: 0x%x\n", __func__, newctrl);
-
-// 		if (!acm->clocal && (acm->ctrlin & ~newctrl & ACM_CTRL_DCD)) {
-// 			dev_dbg(&acm->control->dev,
-// 				"%s - calling hangup\n", __func__);
-// 			tty_port_tty_hangup(&acm->port, false);
-// 		}
-
-// 		difference = acm->ctrlin ^ newctrl;
-// 		spin_lock_irqsave(&acm->read_lock, flags);
-// 		acm->ctrlin = newctrl;
-// 		acm->oldcount = acm->iocount;
-
-// 		if (difference & ACM_CTRL_DSR)
-// 			acm->iocount.dsr++;
-// 		if (difference & ACM_CTRL_DCD)
-// 			acm->iocount.dcd++;
-// 		if (newctrl & ACM_CTRL_BRK)
-// 			acm->iocount.brk++;
-// 		if (newctrl & ACM_CTRL_RI)
-// 			acm->iocount.rng++;
-// 		if (newctrl & ACM_CTRL_FRAMING)
-// 			acm->iocount.frame++;
-// 		if (newctrl & ACM_CTRL_PARITY)
-// 			acm->iocount.parity++;
-// 		if (newctrl & ACM_CTRL_OVERRUN)
-// 			acm->iocount.overrun++;
-// 		spin_unlock_irqrestore(&acm->read_lock, flags);
-
-// 		if (difference)
-// 			wake_up_all(&acm->wioctl);
-
-// 		break;
-
-// 	default:
-// 		dev_dbg(&acm->control->dev,
-// 			"%s - unknown notification %d received: index %d len %d\n",
-// 			__func__,
-// 			dr->bNotificationType, dr->wIndex, dr->wLength);
-// 	}
-// }
 
 /* control interface reports status changes with "interrupt" transfers */
 static void acm_ctrl_irq(struct urb *urb)
@@ -918,94 +834,6 @@ static int acm_tty_write(struct tty_struct *tty,
 		return stat;
 	return count;
 }
-
-// static int acm_tty_write_room(struct tty_struct *tty)
-// {
-// 	printk(KERN_INFO "acm_tty_write_room called\n");
-// 	struct acm *acm = tty->driver_data;
-// 	/*
-// 	 * Do not let the line discipline to know that we have a reserve,
-// 	 * or it might get too enthusiastic.
-// 	 */
-// 	return acm_wb_is_avail(acm) ? acm->writesize : 0;
-// }
-
-// static int acm_tty_tiocmget(struct tty_struct *tty)
-// {
-// 	printk(KERN_INFO "acm_tty_tiocmget called\n");
-// 	struct acm *acm = tty->driver_data;
-
-// 	return (acm->ctrlout & ACM_CTRL_DTR ? TIOCM_DTR : 0) |
-// 	       (acm->ctrlout & ACM_CTRL_RTS ? TIOCM_RTS : 0) |
-// 	       (acm->ctrlin  & ACM_CTRL_DSR ? TIOCM_DSR : 0) |
-// 	       (acm->ctrlin  & ACM_CTRL_RI  ? TIOCM_RI  : 0) |
-// 	       (acm->ctrlin  & ACM_CTRL_DCD ? TIOCM_CD  : 0) |
-// 	       TIOCM_CTS;
-// }
-
-// static int acm_tty_tiocmset(struct tty_struct *tty,
-// 			    unsigned int set, unsigned int clear)
-// {
-// 	printk(KERN_INFO "acm_tty_tiocmset called\n");
-// 	struct acm *acm = tty->driver_data;
-// 	unsigned int newctrl;
-
-// 	newctrl = acm->ctrlout;
-// 	set = (set & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
-// 					(set & TIOCM_RTS ? ACM_CTRL_RTS : 0);
-// 	clear = (clear & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
-// 					(clear & TIOCM_RTS ? ACM_CTRL_RTS : 0);
-
-// 	newctrl = (newctrl & ~clear) | set;
-
-// 	if (acm->ctrlout == newctrl)
-// 		return 0;
-// 	return acm_set_control(acm, acm->ctrlout = newctrl);
-// }
-
-// static int wait_serial_change(struct acm *acm, unsigned long arg)
-// {
-// 	printk(KERN_INFO "wait_serial_change called\n");
-// 	int rv = 0;
-// 	DECLARE_WAITQUEUE(wait, current);
-// 	struct async_icount old, new;
-
-// 	do {
-// 		spin_lock_irq(&acm->read_lock);
-// 		old = acm->oldcount;
-// 		new = acm->iocount;
-// 		acm->oldcount = new;
-// 		spin_unlock_irq(&acm->read_lock);
-
-// 		if ((arg & TIOCM_DSR) &&
-// 			old.dsr != new.dsr)
-// 			break;
-// 		if ((arg & TIOCM_CD)  &&
-// 			old.dcd != new.dcd)
-// 			break;
-// 		if ((arg & TIOCM_RI) &&
-// 			old.rng != new.rng)
-// 			break;
-
-// 		add_wait_queue(&acm->wioctl, &wait);
-// 		set_current_state(TASK_INTERRUPTIBLE);
-// 		schedule();
-// 		remove_wait_queue(&acm->wioctl, &wait);
-// 		if (acm->disconnected) {
-// 			if (arg & TIOCM_CD)
-// 				break;
-// 			else
-// 				rv = -ENODEV;
-// 		} else {
-// 			if (signal_pending(current))
-// 				rv = -ERESTARTSYS;
-// 		}
-// 	} while (!rv);
-
-
-
-// 	return rv;
-// }
 
 static int acm_tty_ioctl(struct tty_struct *tty,
 					unsigned int cmd, unsigned long arg)
@@ -1619,11 +1447,8 @@ static const struct tty_operations acm_ops = {
 	.close =		acm_tty_close,
 	.cleanup =		acm_tty_cleanup,
 	.write =		acm_tty_write,
-	// .write_room =	acm_tty_write_room,
 	.ioctl =		acm_tty_ioctl,
 	.set_termios =	acm_tty_set_termios,
-	// .tiocmget =		acm_tty_tiocmget,
-	// .tiocmset =		acm_tty_tiocmset
 };
 
 static int __init acm_init(void)
