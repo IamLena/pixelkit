@@ -1157,12 +1157,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		call_intf_num = cmgmd->bDataInterface;
 
 	if (!union_header) {
-		// if (intf->cur_altsetting->desc.bNumEndpoints == 3) {
-		// 	dev_dbg(&intf->dev, "No union descriptor, assuming single interface\n");
-		// 	combined_interfaces = 1;
-		// 	control_interface = data_interface = intf;
-		// 	goto look_for_collapsed_interface;
-		// } else
 		if (call_intf_num > 0) {
 			dev_dbg(&intf->dev, "No union descriptor, using call management descriptor\n");
 			data_intf_num = call_intf_num;
@@ -1181,13 +1175,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 		if (control_interface)
 			class = control_interface->cur_altsetting->desc.bInterfaceClass;
-
-		// if (class != USB_CLASS_COMM && class != USB_CLASS_CDC_DATA) {
-		// 	dev_dbg(&intf->dev, "Broken union descriptor, assuming single interface\n");
-		// 	combined_interfaces = 1;
-		// 	control_interface = data_interface = intf;
-		// 	goto look_for_collapsed_interface;
-		// }
 	}
 
 	if (!control_interface || !data_interface) {
@@ -1197,27 +1184,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 	if (data_intf_num != call_intf_num)
 		dev_dbg(&intf->dev, "Separate call control interface. That is not fully supported.\n");
-
-	if (control_interface == data_interface) {
-		printk(KERN_INFO "control_interface == data_interface\n");
-		/* some broken devices designed for windows work this way */
-		dev_warn(&intf->dev,"Control and data interfaces are not separated!\n");
-		combined_interfaces = 1;
-		if (data_interface->cur_altsetting->desc.bNumEndpoints != 3) {
-			dev_err(&intf->dev, "This needs exactly 3 endpoints\n");
-			return -EINVAL;
-		}
-look_for_collapsed_interface:
-		printk(KERN_INFO "look_for_collapsed_interface\n");  //never called
-		res = usb_find_common_endpoints(data_interface->cur_altsetting,
-				&epread, &epwrite, &epctrl, NULL);
-		if (res)
-			return res;
-
-		goto made_compressed_probe;
-	}
-
-skip_normal_probe:
 
 	/*workaround for switched interfaces */
 	if (data_interface->cur_altsetting->desc.bInterfaceClass != USB_CLASS_CDC_DATA) {
