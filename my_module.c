@@ -549,7 +549,6 @@ static void acm_process_read_urb(struct acm *acm, struct urb *urb)
 
 static void acm_read_bulk_callback(struct urb *urb)
 {
-	printk(KERN_INFO "acm_read_bulk_callback called");
 	struct acm_rb *rb = urb->context;
 	struct acm *acm = rb->instance;
 	int status = urb->status;
@@ -1158,12 +1157,13 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		call_intf_num = cmgmd->bDataInterface;
 
 	if (!union_header) {
-		if (intf->cur_altsetting->desc.bNumEndpoints == 3) {
-			dev_dbg(&intf->dev, "No union descriptor, assuming single interface\n");
-			combined_interfaces = 1;
-			control_interface = data_interface = intf;
-			goto look_for_collapsed_interface;
-		} else if (call_intf_num > 0) {
+		// if (intf->cur_altsetting->desc.bNumEndpoints == 3) {
+		// 	dev_dbg(&intf->dev, "No union descriptor, assuming single interface\n");
+		// 	combined_interfaces = 1;
+		// 	control_interface = data_interface = intf;
+		// 	goto look_for_collapsed_interface;
+		// } else
+		if (call_intf_num > 0) {
 			dev_dbg(&intf->dev, "No union descriptor, using call management descriptor\n");
 			data_intf_num = call_intf_num;
 			data_interface = usb_ifnum_to_if(usb_dev, data_intf_num);
@@ -1182,12 +1182,12 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		if (control_interface)
 			class = control_interface->cur_altsetting->desc.bInterfaceClass;
 
-		if (class != USB_CLASS_COMM && class != USB_CLASS_CDC_DATA) {
-			dev_dbg(&intf->dev, "Broken union descriptor, assuming single interface\n");
-			combined_interfaces = 1;
-			control_interface = data_interface = intf;
-			goto look_for_collapsed_interface;
-		}
+		// if (class != USB_CLASS_COMM && class != USB_CLASS_CDC_DATA) {
+		// 	dev_dbg(&intf->dev, "Broken union descriptor, assuming single interface\n");
+		// 	combined_interfaces = 1;
+		// 	control_interface = data_interface = intf;
+		// 	goto look_for_collapsed_interface;
+		// }
 	}
 
 	if (!control_interface || !data_interface) {
@@ -1199,6 +1199,7 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		dev_dbg(&intf->dev, "Separate call control interface. That is not fully supported.\n");
 
 	if (control_interface == data_interface) {
+		printk(KERN_INFO "control_interface == data_interface\n");
 		/* some broken devices designed for windows work this way */
 		dev_warn(&intf->dev,"Control and data interfaces are not separated!\n");
 		combined_interfaces = 1;
@@ -1207,7 +1208,7 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 			return -EINVAL;
 		}
 look_for_collapsed_interface:
-		printk(KERN_INFO "look_for_collapsed_interface\n");
+		printk(KERN_INFO "look_for_collapsed_interface\n");  //never called
 		res = usb_find_common_endpoints(data_interface->cur_altsetting,
 				&epread, &epwrite, &epctrl, NULL);
 		if (res)
