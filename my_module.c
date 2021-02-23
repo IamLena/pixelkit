@@ -121,18 +121,7 @@ struct acm {
 	unsigned int combined_interfaces:1;	/* control and data collapsed */
 	u8 bInterval;
 	struct usb_anchor delayed;			/* writes queued for a device about to be woken */
-	unsigned long quirks;
 };
-
-/* constants describing various quirks and errors */
-#define NO_UNION_NORMAL			BIT(0)
-#define SINGLE_RX_URB			BIT(1)
-#define NO_CAP_LINE			BIT(2)
-#define IGNORE_DEVICE			BIT(3)
-#define QUIRK_CONTROL_LINE_STATE	BIT(4)
-#define CLEAR_HALT_CONDITIONS		BIT(5)
-#define SEND_ZERO_PACKET		BIT(6)
-#define DISABLE_ECHO			BIT(7)
 
 #define DRIVER_AUTHOR "Luchina"
 #define DRIVER_DESC "driver for ardruino uno device to print messages"
@@ -228,9 +217,6 @@ static int acm_ctrl_msg(struct acm *acm, int request, int value,
  */
 static inline int acm_set_control(struct acm *acm, int control)
 {
-	// if (acm->quirks & QUIRK_CONTROL_LINE_STATE)
-	// 	return -EOPNOTSUPP;
-
 	return acm_ctrl_msg(acm, USB_CDC_REQ_SET_CONTROL_LINE_STATE,
 			control, NULL, 0);
 }
@@ -703,13 +689,6 @@ static int acm_tty_install(struct tty_driver *driver, struct tty_struct *tty)
 	if (retval)
 		goto error_init_termios;
 
-	/*
-	 * Suppress initial echoing for some devices which might send data
-	 * immediately after acm driver has been installed.
-	 */
-	// if (acm->quirks & DISABLE_ECHO)
-	// 	tty->termios.c_lflag &= ~ECHO;
-
 	tty->driver_data = acm;
 
 	return 0;
@@ -1139,7 +1118,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	u8 *buf;
 	int call_intf_num = -1;
 	int data_intf_num = -1;
-	unsigned long quirks;
 	int num_rx_buf;
 	int i;
 	int combined_interfaces = 0;
@@ -1147,26 +1125,8 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	int rv = -ENOMEM;
 	int res;
 
-	// /* normal quirks */
-	// quirks = (unsigned long)id->driver_info;
-
-	// if (quirks == IGNORE_DEVICE)
-	// 	return -ENODEV;
-
 	memset(&h, 0x00, sizeof(struct usb_cdc_parsed_header));
-
-	// num_rx_buf = (quirks == SINGLE_RX_URB) ? 1 : ACM_NR;
 	num_rx_buf = ACM_NR;
-
-	/* handle quirks deadly to normal probing*/
-	// if (quirks == NO_UNION_NORMAL) {
-	// 	data_interface = usb_ifnum_to_if(usb_dev, 1);
-	// 	control_interface = usb_ifnum_to_if(usb_dev, 0);
-	// 	/* we would crash */
-	// 	if (!data_interface || !control_interface)
-	// 		return -ENODEV;
-	// 	goto skip_normal_probe;
-	// }
 
 	/* normal probing*/
 	if (!buffer) {
@@ -1240,8 +1200,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		/* some broken devices designed for windows work this way */
 		dev_warn(&intf->dev,"Control and data interfaces are not separated!\n");
 		combined_interfaces = 1;
-		/* a popular other OS doesn't use it */
-		// quirks |= NO_CAP_LINE;
 		if (data_interface->cur_altsetting->desc.bNumEndpoints != 3) {
 			dev_err(&intf->dev, "This needs exactly 3 endpoints\n");
 			return -EINVAL;
@@ -1307,7 +1265,6 @@ made_compressed_probe:
 
 	ctrlsize = usb_endpoint_maxp(epctrl);
 	readsize = usb_endpoint_maxp(epread) * 2;
-				// (quirks == SINGLE_RX_URB ? 1 : 2);
 	acm->combined_interfaces = combined_interfaces;
 	acm->writesize = usb_endpoint_maxp(epwrite) * 20;
 	acm->control = control_interface;
@@ -1323,8 +1280,6 @@ made_compressed_probe:
 	acm->dev = usb_dev;
 	if (h.usb_cdc_acm_descriptor)
 		acm->ctrl_caps = h.usb_cdc_acm_descriptor->bmCapabilities;
-	// if (quirks & NO_CAP_LINE)
-	// 	acm->ctrl_caps &= ~USB_CDC_CAP_LINE;
 	acm->ctrlsize = ctrlsize;
 	acm->readsize = readsize;
 	acm->rx_buflimit = num_rx_buf;
@@ -1344,7 +1299,6 @@ made_compressed_probe:
 	else
 		acm->out = usb_sndbulkpipe(usb_dev, epwrite->bEndpointAddress);
 	init_usb_anchor(&acm->delayed);
-	// acm->quirks = quirks;
 
 	buf = usb_alloc_coherent(usb_dev, ctrlsize, GFP_KERNEL, &acm->ctrl_dma);
 	if (!buf)
@@ -1402,8 +1356,6 @@ made_compressed_probe:
 			usb_fill_bulk_urb(snd->urb, usb_dev, acm->out,
 				NULL, acm->writesize, acm_write_bulk, snd);
 		snd->urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
-		// if (quirks & SEND_ZERO_PACKET)
-		// 	snd->urb->transfer_flags |= URB_ZERO_PACKET;
 		snd->instance = acm;
 	}
 
@@ -1471,13 +1423,8 @@ skip_countries:
 		rv = PTR_ERR(tty_dev);
 		goto alloc_fail6;
 	}
-
-	// if (quirks & CLEAR_HALT_CONDITIONS) {
-	// 	usb_clear_halt(usb_dev, acm->in);
-	// 	usb_clear_halt(usb_dev, acm->out);
-	// }
-
 	return 0;
+
 alloc_fail6:
 	if (acm->country_codes) {
 		device_remove_file(&acm->control->dev,
