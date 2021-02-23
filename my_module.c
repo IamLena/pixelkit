@@ -268,20 +268,20 @@ static int acm_wb_alloc(struct acm *acm)
 	}
 }
 
-static int acm_wb_is_avail(struct acm *acm)
-{
-	printk(KERN_INFO "acm_wb_is_avail called\n");
-	int i, n;
-	unsigned long flags;
+// static int acm_wb_is_avail(struct acm *acm)
+// {
+// 	printk(KERN_INFO "acm_wb_is_avail called\n");
+// 	int i, n;
+// 	unsigned long flags;
 
-	n = ACM_NW;
-	spin_lock_irqsave(&acm->write_lock, flags);
-	for (i = 0; i < ACM_NW; i++)
-		if(acm->wb[i].use)
-			n--;
-	spin_unlock_irqrestore(&acm->write_lock, flags);
-	return n;
-}
+// 	n = ACM_NW;
+// 	spin_lock_irqsave(&acm->write_lock, flags);
+// 	for (i = 0; i < ACM_NW; i++)
+// 		if(acm->wb[i].use)
+// 			n--;
+// 	spin_unlock_irqrestore(&acm->write_lock, flags);
+// 	return n;
+// }
 
 /*
  * Finish write. Caller must hold acm->write_lock
@@ -325,110 +325,110 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 /*
  * attributes exported through sysfs
  */
-static ssize_t bmCapabilities_show
-(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	printk(KERN_INFO "bmCapabilities_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct acm *acm = usb_get_intfdata(intf);
+// static ssize_t bmCapabilities_show
+// (struct device *dev, struct device_attribute *attr, char *buf)
+// {
+// 	printk(KERN_INFO "bmCapabilities_show called\n");
+// 	struct usb_interface *intf = to_usb_interface(dev);
+// 	struct acm *acm = usb_get_intfdata(intf);
 
-	return sprintf(buf, "%d", acm->ctrl_caps);
-}
-static DEVICE_ATTR_RO(bmCapabilities);
+// 	return sprintf(buf, "%d", acm->ctrl_caps);
+// }
+// static DEVICE_ATTR_RO(bmCapabilities);
 
-static ssize_t wCountryCodes_show
-(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	printk(KERN_INFO "wCountryCodes_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct acm *acm = usb_get_intfdata(intf);
+// static ssize_t wCountryCodes_show
+// (struct device *dev, struct device_attribute *attr, char *buf)
+// {
+// 	printk(KERN_INFO "wCountryCodes_show called\n");
+// 	struct usb_interface *intf = to_usb_interface(dev);
+// 	struct acm *acm = usb_get_intfdata(intf);
 
-	memcpy(buf, acm->country_codes, acm->country_code_size);
-	return acm->country_code_size;
-}
+// 	memcpy(buf, acm->country_codes, acm->country_code_size);
+// 	return acm->country_code_size;
+// }
 
-static DEVICE_ATTR_RO(wCountryCodes);
+// static DEVICE_ATTR_RO(wCountryCodes);
 
-static ssize_t iCountryCodeRelDate_show
-(struct device *dev, struct device_attribute *attr, char *buf)
-{
-	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct acm *acm = usb_get_intfdata(intf);
+// static ssize_t iCountryCodeRelDate_show
+// (struct device *dev, struct device_attribute *attr, char *buf)
+// {
+// 	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
+// 	struct usb_interface *intf = to_usb_interface(dev);
+// 	struct acm *acm = usb_get_intfdata(intf);
 
-	return sprintf(buf, "%d", acm->country_rel_date);
-}
+// 	return sprintf(buf, "%d", acm->country_rel_date);
+// }
 
-static DEVICE_ATTR_RO(iCountryCodeRelDate);
+// static DEVICE_ATTR_RO(iCountryCodeRelDate);
 /*
  * Interrupt handlers for various ACM device responses
  */
 
-static void acm_process_notification(struct acm *acm, unsigned char *buf)
-{
-	printk(KERN_INFO "acm_process_notification called\n");
-	int newctrl;
-	int difference;
-	unsigned long flags;
-	struct usb_cdc_notification *dr = (struct usb_cdc_notification *)buf;
-	unsigned char *data = buf + sizeof(struct usb_cdc_notification);
+// static void acm_process_notification(struct acm *acm, unsigned char *buf)
+// {
+// 	printk(KERN_INFO "acm_process_notification called\n");
+// 	int newctrl;
+// 	int difference;
+// 	unsigned long flags;
+// 	struct usb_cdc_notification *dr = (struct usb_cdc_notification *)buf;
+// 	unsigned char *data = buf + sizeof(struct usb_cdc_notification);
 
-	switch (dr->bNotificationType) {
-	case USB_CDC_NOTIFY_NETWORK_CONNECTION:
-		dev_dbg(&acm->control->dev,
-			"%s - network connection: %d\n", __func__, dr->wValue);
-		break;
+// 	switch (dr->bNotificationType) {
+// 	case USB_CDC_NOTIFY_NETWORK_CONNECTION:
+// 		dev_dbg(&acm->control->dev,
+// 			"%s - network connection: %d\n", __func__, dr->wValue);
+// 		break;
 
-	case USB_CDC_NOTIFY_SERIAL_STATE:
-		if (le16_to_cpu(dr->wLength) != 2) {
-			dev_dbg(&acm->control->dev,
-				"%s - malformed serial state\n", __func__);
-			break;
-		}
+// 	case USB_CDC_NOTIFY_SERIAL_STATE:
+// 		if (le16_to_cpu(dr->wLength) != 2) {
+// 			dev_dbg(&acm->control->dev,
+// 				"%s - malformed serial state\n", __func__);
+// 			break;
+// 		}
 
-		newctrl = get_unaligned_le16(data);
-		dev_dbg(&acm->control->dev,
-			"%s - serial state: 0x%x\n", __func__, newctrl);
+// 		newctrl = get_unaligned_le16(data);
+// 		dev_dbg(&acm->control->dev,
+// 			"%s - serial state: 0x%x\n", __func__, newctrl);
 
-		if (!acm->clocal && (acm->ctrlin & ~newctrl & ACM_CTRL_DCD)) {
-			dev_dbg(&acm->control->dev,
-				"%s - calling hangup\n", __func__);
-			tty_port_tty_hangup(&acm->port, false);
-		}
+// 		if (!acm->clocal && (acm->ctrlin & ~newctrl & ACM_CTRL_DCD)) {
+// 			dev_dbg(&acm->control->dev,
+// 				"%s - calling hangup\n", __func__);
+// 			tty_port_tty_hangup(&acm->port, false);
+// 		}
 
-		difference = acm->ctrlin ^ newctrl;
-		spin_lock_irqsave(&acm->read_lock, flags);
-		acm->ctrlin = newctrl;
-		acm->oldcount = acm->iocount;
+// 		difference = acm->ctrlin ^ newctrl;
+// 		spin_lock_irqsave(&acm->read_lock, flags);
+// 		acm->ctrlin = newctrl;
+// 		acm->oldcount = acm->iocount;
 
-		if (difference & ACM_CTRL_DSR)
-			acm->iocount.dsr++;
-		if (difference & ACM_CTRL_DCD)
-			acm->iocount.dcd++;
-		if (newctrl & ACM_CTRL_BRK)
-			acm->iocount.brk++;
-		if (newctrl & ACM_CTRL_RI)
-			acm->iocount.rng++;
-		if (newctrl & ACM_CTRL_FRAMING)
-			acm->iocount.frame++;
-		if (newctrl & ACM_CTRL_PARITY)
-			acm->iocount.parity++;
-		if (newctrl & ACM_CTRL_OVERRUN)
-			acm->iocount.overrun++;
-		spin_unlock_irqrestore(&acm->read_lock, flags);
+// 		if (difference & ACM_CTRL_DSR)
+// 			acm->iocount.dsr++;
+// 		if (difference & ACM_CTRL_DCD)
+// 			acm->iocount.dcd++;
+// 		if (newctrl & ACM_CTRL_BRK)
+// 			acm->iocount.brk++;
+// 		if (newctrl & ACM_CTRL_RI)
+// 			acm->iocount.rng++;
+// 		if (newctrl & ACM_CTRL_FRAMING)
+// 			acm->iocount.frame++;
+// 		if (newctrl & ACM_CTRL_PARITY)
+// 			acm->iocount.parity++;
+// 		if (newctrl & ACM_CTRL_OVERRUN)
+// 			acm->iocount.overrun++;
+// 		spin_unlock_irqrestore(&acm->read_lock, flags);
 
-		if (difference)
-			wake_up_all(&acm->wioctl);
+// 		if (difference)
+// 			wake_up_all(&acm->wioctl);
 
-		break;
+// 		break;
 
-	default:
-		dev_dbg(&acm->control->dev,
-			"%s - unknown notification %d received: index %d len %d\n",
-			__func__,
-			dr->bNotificationType, dr->wIndex, dr->wLength);
-	}
-}
+// 	default:
+// 		dev_dbg(&acm->control->dev,
+// 			"%s - unknown notification %d received: index %d len %d\n",
+// 			__func__,
+// 			dr->bNotificationType, dr->wIndex, dr->wLength);
+// 	}
+// }
 
 /* control interface reports status changes with "interrupt" transfers */
 static void acm_ctrl_irq(struct urb *urb)
@@ -496,11 +496,11 @@ static void acm_ctrl_irq(struct urb *urb)
 		current_size = acm->nb_index;
 	}
 
-	if (current_size >= expected_size) {
-		/* notification complete */
-		acm_process_notification(acm, (unsigned char *)dr);
-		acm->nb_index = 0;
-	}
+	// if (current_size >= expected_size) {
+	// 	/* notification complete */
+	// 	acm_process_notification(acm, (unsigned char *)dr);
+	// 	acm->nb_index = 0;
+	// }
 
 exit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
@@ -919,93 +919,93 @@ static int acm_tty_write(struct tty_struct *tty,
 	return count;
 }
 
-static int acm_tty_write_room(struct tty_struct *tty)
-{
-	printk(KERN_INFO "acm_tty_write_room called\n");
-	struct acm *acm = tty->driver_data;
-	/*
-	 * Do not let the line discipline to know that we have a reserve,
-	 * or it might get too enthusiastic.
-	 */
-	return acm_wb_is_avail(acm) ? acm->writesize : 0;
-}
+// static int acm_tty_write_room(struct tty_struct *tty)
+// {
+// 	printk(KERN_INFO "acm_tty_write_room called\n");
+// 	struct acm *acm = tty->driver_data;
+// 	/*
+// 	 * Do not let the line discipline to know that we have a reserve,
+// 	 * or it might get too enthusiastic.
+// 	 */
+// 	return acm_wb_is_avail(acm) ? acm->writesize : 0;
+// }
 
-static int acm_tty_tiocmget(struct tty_struct *tty)
-{
-	printk(KERN_INFO "acm_tty_tiocmget called\n");
-	struct acm *acm = tty->driver_data;
+// static int acm_tty_tiocmget(struct tty_struct *tty)
+// {
+// 	printk(KERN_INFO "acm_tty_tiocmget called\n");
+// 	struct acm *acm = tty->driver_data;
 
-	return (acm->ctrlout & ACM_CTRL_DTR ? TIOCM_DTR : 0) |
-	       (acm->ctrlout & ACM_CTRL_RTS ? TIOCM_RTS : 0) |
-	       (acm->ctrlin  & ACM_CTRL_DSR ? TIOCM_DSR : 0) |
-	       (acm->ctrlin  & ACM_CTRL_RI  ? TIOCM_RI  : 0) |
-	       (acm->ctrlin  & ACM_CTRL_DCD ? TIOCM_CD  : 0) |
-	       TIOCM_CTS;
-}
+// 	return (acm->ctrlout & ACM_CTRL_DTR ? TIOCM_DTR : 0) |
+// 	       (acm->ctrlout & ACM_CTRL_RTS ? TIOCM_RTS : 0) |
+// 	       (acm->ctrlin  & ACM_CTRL_DSR ? TIOCM_DSR : 0) |
+// 	       (acm->ctrlin  & ACM_CTRL_RI  ? TIOCM_RI  : 0) |
+// 	       (acm->ctrlin  & ACM_CTRL_DCD ? TIOCM_CD  : 0) |
+// 	       TIOCM_CTS;
+// }
 
-static int acm_tty_tiocmset(struct tty_struct *tty,
-			    unsigned int set, unsigned int clear)
-{
-	printk(KERN_INFO "acm_tty_tiocmset called\n");
-	struct acm *acm = tty->driver_data;
-	unsigned int newctrl;
+// static int acm_tty_tiocmset(struct tty_struct *tty,
+// 			    unsigned int set, unsigned int clear)
+// {
+// 	printk(KERN_INFO "acm_tty_tiocmset called\n");
+// 	struct acm *acm = tty->driver_data;
+// 	unsigned int newctrl;
 
-	newctrl = acm->ctrlout;
-	set = (set & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
-					(set & TIOCM_RTS ? ACM_CTRL_RTS : 0);
-	clear = (clear & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
-					(clear & TIOCM_RTS ? ACM_CTRL_RTS : 0);
+// 	newctrl = acm->ctrlout;
+// 	set = (set & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
+// 					(set & TIOCM_RTS ? ACM_CTRL_RTS : 0);
+// 	clear = (clear & TIOCM_DTR ? ACM_CTRL_DTR : 0) |
+// 					(clear & TIOCM_RTS ? ACM_CTRL_RTS : 0);
 
-	newctrl = (newctrl & ~clear) | set;
+// 	newctrl = (newctrl & ~clear) | set;
 
-	if (acm->ctrlout == newctrl)
-		return 0;
-	return acm_set_control(acm, acm->ctrlout = newctrl);
-}
+// 	if (acm->ctrlout == newctrl)
+// 		return 0;
+// 	return acm_set_control(acm, acm->ctrlout = newctrl);
+// }
 
-static int wait_serial_change(struct acm *acm, unsigned long arg)
-{
-	printk(KERN_INFO "wait_serial_change called\n");
-	int rv = 0;
-	DECLARE_WAITQUEUE(wait, current);
-	struct async_icount old, new;
+// static int wait_serial_change(struct acm *acm, unsigned long arg)
+// {
+// 	printk(KERN_INFO "wait_serial_change called\n");
+// 	int rv = 0;
+// 	DECLARE_WAITQUEUE(wait, current);
+// 	struct async_icount old, new;
 
-	do {
-		spin_lock_irq(&acm->read_lock);
-		old = acm->oldcount;
-		new = acm->iocount;
-		acm->oldcount = new;
-		spin_unlock_irq(&acm->read_lock);
+// 	do {
+// 		spin_lock_irq(&acm->read_lock);
+// 		old = acm->oldcount;
+// 		new = acm->iocount;
+// 		acm->oldcount = new;
+// 		spin_unlock_irq(&acm->read_lock);
 
-		if ((arg & TIOCM_DSR) &&
-			old.dsr != new.dsr)
-			break;
-		if ((arg & TIOCM_CD)  &&
-			old.dcd != new.dcd)
-			break;
-		if ((arg & TIOCM_RI) &&
-			old.rng != new.rng)
-			break;
+// 		if ((arg & TIOCM_DSR) &&
+// 			old.dsr != new.dsr)
+// 			break;
+// 		if ((arg & TIOCM_CD)  &&
+// 			old.dcd != new.dcd)
+// 			break;
+// 		if ((arg & TIOCM_RI) &&
+// 			old.rng != new.rng)
+// 			break;
 
-		add_wait_queue(&acm->wioctl, &wait);
-		set_current_state(TASK_INTERRUPTIBLE);
-		schedule();
-		remove_wait_queue(&acm->wioctl, &wait);
-		if (acm->disconnected) {
-			if (arg & TIOCM_CD)
-				break;
-			else
-				rv = -ENODEV;
-		} else {
-			if (signal_pending(current))
-				rv = -ERESTARTSYS;
-		}
-	} while (!rv);
+// 		add_wait_queue(&acm->wioctl, &wait);
+// 		set_current_state(TASK_INTERRUPTIBLE);
+// 		schedule();
+// 		remove_wait_queue(&acm->wioctl, &wait);
+// 		if (acm->disconnected) {
+// 			if (arg & TIOCM_CD)
+// 				break;
+// 			else
+// 				rv = -ENODEV;
+// 		} else {
+// 			if (signal_pending(current))
+// 				rv = -ERESTARTSYS;
+// 		}
+// 	} while (!rv);
 
 
 
-	return rv;
-}
+// 	return rv;
+// }
 
 static int acm_tty_ioctl(struct tty_struct *tty,
 					unsigned int cmd, unsigned long arg)
@@ -1021,7 +1021,7 @@ static int acm_tty_ioctl(struct tty_struct *tty,
 			rv = -EIO;
 			break;
 		}
-		rv = wait_serial_change(acm, arg);
+		// rv = wait_serial_change(acm, arg);
 		usb_autopm_put_interface(acm->control);
 		break;
 	}
@@ -1515,83 +1515,83 @@ static void acm_disconnect(struct usb_interface *intf)
 	tty_port_put(&acm->port);
 }
 
-#ifdef CONFIG_PM
-static int acm_suspend(struct usb_interface *intf, pm_message_t message)
-{
-	printk(KERN_INFO "acm_suspend called\n");
-	struct acm *acm = usb_get_intfdata(intf);
-	int cnt;
+// #ifdef CONFIG_PM
+// static int acm_suspend(struct usb_interface *intf, pm_message_t message)
+// {
+// 	printk(KERN_INFO "acm_suspend called\n");
+// 	struct acm *acm = usb_get_intfdata(intf);
+// 	int cnt;
 
-	spin_lock_irq(&acm->write_lock);
-	if (PMSG_IS_AUTO(message)) {
-		if (acm->transmitting) {
-			spin_unlock_irq(&acm->write_lock);
-			return -EBUSY;
-		}
-	}
-	cnt = acm->susp_count++;
-	spin_unlock_irq(&acm->write_lock);
+// 	spin_lock_irq(&acm->write_lock);
+// 	if (PMSG_IS_AUTO(message)) {
+// 		if (acm->transmitting) {
+// 			spin_unlock_irq(&acm->write_lock);
+// 			return -EBUSY;
+// 		}
+// 	}
+// 	cnt = acm->susp_count++;
+// 	spin_unlock_irq(&acm->write_lock);
 
-	if (cnt)
-		return 0;
+// 	if (cnt)
+// 		return 0;
 
-	acm_kill_urbs(acm);
-	cancel_delayed_work_sync(&acm->dwork);
-	acm->urbs_in_error_delay = 0;
+// 	acm_kill_urbs(acm);
+// 	cancel_delayed_work_sync(&acm->dwork);
+// 	acm->urbs_in_error_delay = 0;
 
-	return 0;
-}
+// 	return 0;
+// }
 
-static int acm_resume(struct usb_interface *intf)
-{
-	printk(KERN_INFO "acm_resume called\n");
-	struct acm *acm = usb_get_intfdata(intf);
-	struct urb *urb;
-	int rv = 0;
+// static int acm_resume(struct usb_interface *intf)
+// {
+// 	printk(KERN_INFO "acm_resume called\n");
+// 	struct acm *acm = usb_get_intfdata(intf);
+// 	struct urb *urb;
+// 	int rv = 0;
 
-	spin_lock_irq(&acm->write_lock);
+// 	spin_lock_irq(&acm->write_lock);
 
-	if (--acm->susp_count)
-		goto out;
+// 	if (--acm->susp_count)
+// 		goto out;
 
-	if (tty_port_initialized(&acm->port)) {
-		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
+// 	if (tty_port_initialized(&acm->port)) {
+// 		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
 
-		for (;;) {
-			urb = usb_get_from_anchor(&acm->delayed);
-			if (!urb)
-				break;
+// 		for (;;) {
+// 			urb = usb_get_from_anchor(&acm->delayed);
+// 			if (!urb)
+// 				break;
 
-			acm_start_wb(acm, urb->context);
-		}
+// 			acm_start_wb(acm, urb->context);
+// 		}
 
-		/*
-		 * delayed error checking because we must
-		 * do the write path at all cost
-		 */
-		if (rv < 0)
-			goto out;
+// 		/*
+// 		 * delayed error checking because we must
+// 		 * do the write path at all cost
+// 		 */
+// 		if (rv < 0)
+// 			goto out;
 
-		rv = acm_submit_read_urbs(acm, GFP_ATOMIC);
-	}
-out:
-	spin_unlock_irq(&acm->write_lock);
+// 		rv = acm_submit_read_urbs(acm, GFP_ATOMIC);
+// 	}
+// out:
+// 	spin_unlock_irq(&acm->write_lock);
 
-	return rv;
-}
+// 	return rv;
+// }
 
-static int acm_reset_resume(struct usb_interface *intf)
-{
-	printk(KERN_INFO "acm_reset_resume called\n");
-	struct acm *acm = usb_get_intfdata(intf);
+// static int acm_reset_resume(struct usb_interface *intf)
+// {
+// 	printk(KERN_INFO "acm_reset_resume called\n");
+// 	struct acm *acm = usb_get_intfdata(intf);
 
-	if (tty_port_initialized(&acm->port))
-		tty_port_tty_hangup(&acm->port, false);
+// 	if (tty_port_initialized(&acm->port))
+// 		tty_port_tty_hangup(&acm->port, false);
 
-	return acm_resume(intf);
-}
+// 	return acm_resume(intf);
+// }
 
-#endif /* CONFIG_PM */
+// #endif /* CONFIG_PM */
 
 static const struct usb_device_id acm_ids[] = {
 	{ USB_DEVICE(0x2341, 0x0043) },
@@ -1605,12 +1605,12 @@ static struct usb_driver acm_driver = {
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
 	.id_table =	acm_ids,
-#ifdef CONFIG_PM
-	.suspend =	acm_suspend,
-	.resume =	acm_resume,
-	.reset_resume =	acm_reset_resume,
-	.supports_autosuspend = 1,
-#endif
+// #ifdef CONFIG_PM
+// 	.suspend =	acm_suspend,
+// 	.resume =	acm_resume,
+// 	.reset_resume =	acm_reset_resume,
+// 	.supports_autosuspend = 1,
+// #endif
 };
 
 static const struct tty_operations acm_ops = {
@@ -1619,11 +1619,11 @@ static const struct tty_operations acm_ops = {
 	.close =		acm_tty_close,
 	.cleanup =		acm_tty_cleanup,
 	.write =		acm_tty_write,
-	.write_room =	acm_tty_write_room,
+	// .write_room =	acm_tty_write_room,
 	.ioctl =		acm_tty_ioctl,
 	.set_termios =	acm_tty_set_termios,
-	.tiocmget =		acm_tty_tiocmget,
-	.tiocmset =		acm_tty_tiocmset
+	// .tiocmget =		acm_tty_tiocmget,
+	// .tiocmset =		acm_tty_tiocmset
 };
 
 static int __init acm_init(void)
