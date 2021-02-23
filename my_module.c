@@ -1515,83 +1515,83 @@ static void acm_disconnect(struct usb_interface *intf)
 	tty_port_put(&acm->port);
 }
 
-// #ifdef CONFIG_PM
-// static int acm_suspend(struct usb_interface *intf, pm_message_t message)
-// {
-// 	printk(KERN_INFO "acm_suspend called\n");
-// 	struct acm *acm = usb_get_intfdata(intf);
-// 	int cnt;
+#ifdef CONFIG_PM
+static int acm_suspend(struct usb_interface *intf, pm_message_t message)
+{
+	printk(KERN_INFO "acm_suspend called\n");
+	struct acm *acm = usb_get_intfdata(intf);
+	int cnt;
 
-// 	spin_lock_irq(&acm->write_lock);
-// 	if (PMSG_IS_AUTO(message)) {
-// 		if (acm->transmitting) {
-// 			spin_unlock_irq(&acm->write_lock);
-// 			return -EBUSY;
-// 		}
-// 	}
-// 	cnt = acm->susp_count++;
-// 	spin_unlock_irq(&acm->write_lock);
+	spin_lock_irq(&acm->write_lock);
+	if (PMSG_IS_AUTO(message)) {
+		if (acm->transmitting) {
+			spin_unlock_irq(&acm->write_lock);
+			return -EBUSY;
+		}
+	}
+	cnt = acm->susp_count++;
+	spin_unlock_irq(&acm->write_lock);
 
-// 	if (cnt)
-// 		return 0;
+	if (cnt)
+		return 0;
 
-// 	acm_kill_urbs(acm);
-// 	cancel_delayed_work_sync(&acm->dwork);
-// 	acm->urbs_in_error_delay = 0;
+	acm_kill_urbs(acm);
+	cancel_delayed_work_sync(&acm->dwork);
+	acm->urbs_in_error_delay = 0;
 
-// 	return 0;
-// }
+	return 0;
+}
 
-// static int acm_resume(struct usb_interface *intf)
-// {
-// 	printk(KERN_INFO "acm_resume called\n");
-// 	struct acm *acm = usb_get_intfdata(intf);
-// 	struct urb *urb;
-// 	int rv = 0;
+static int acm_resume(struct usb_interface *intf)
+{
+	printk(KERN_INFO "acm_resume called\n");
+	struct acm *acm = usb_get_intfdata(intf);
+	struct urb *urb;
+	int rv = 0;
 
-// 	spin_lock_irq(&acm->write_lock);
+	spin_lock_irq(&acm->write_lock);
 
-// 	if (--acm->susp_count)
-// 		goto out;
+	if (--acm->susp_count)
+		goto out;
 
-// 	if (tty_port_initialized(&acm->port)) {
-// 		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
+	if (tty_port_initialized(&acm->port)) {
+		rv = usb_submit_urb(acm->ctrlurb, GFP_ATOMIC);
 
-// 		for (;;) {
-// 			urb = usb_get_from_anchor(&acm->delayed);
-// 			if (!urb)
-// 				break;
+		for (;;) {
+			urb = usb_get_from_anchor(&acm->delayed);
+			if (!urb)
+				break;
 
-// 			acm_start_wb(acm, urb->context);
-// 		}
+			acm_start_wb(acm, urb->context);
+		}
 
-// 		/*
-// 		 * delayed error checking because we must
-// 		 * do the write path at all cost
-// 		 */
-// 		if (rv < 0)
-// 			goto out;
+		/*
+		 * delayed error checking because we must
+		 * do the write path at all cost
+		 */
+		if (rv < 0)
+			goto out;
 
-// 		rv = acm_submit_read_urbs(acm, GFP_ATOMIC);
-// 	}
-// out:
-// 	spin_unlock_irq(&acm->write_lock);
+		rv = acm_submit_read_urbs(acm, GFP_ATOMIC);
+	}
+out:
+	spin_unlock_irq(&acm->write_lock);
 
-// 	return rv;
-// }
+	return rv;
+}
 
-// static int acm_reset_resume(struct usb_interface *intf)
-// {
-// 	printk(KERN_INFO "acm_reset_resume called\n");
-// 	struct acm *acm = usb_get_intfdata(intf);
+static int acm_reset_resume(struct usb_interface *intf)
+{
+	printk(KERN_INFO "acm_reset_resume called\n");
+	struct acm *acm = usb_get_intfdata(intf);
 
-// 	if (tty_port_initialized(&acm->port))
-// 		tty_port_tty_hangup(&acm->port, false);
+	if (tty_port_initialized(&acm->port))
+		tty_port_tty_hangup(&acm->port, false);
 
-// 	return acm_resume(intf);
-// }
+	return acm_resume(intf);
+}
 
-// #endif /* CONFIG_PM */
+#endif /* CONFIG_PM */
 
 static const struct usb_device_id acm_ids[] = {
 	{ USB_DEVICE(0x2341, 0x0043) },
@@ -1605,12 +1605,12 @@ static struct usb_driver acm_driver = {
 	.probe =	acm_probe,
 	.disconnect =	acm_disconnect,
 	.id_table =	acm_ids,
-// #ifdef CONFIG_PM
-// 	.suspend =	acm_suspend,
-// 	.resume =	acm_resume,
-// 	.reset_resume =	acm_reset_resume,
-// 	.supports_autosuspend = 1,
-// #endif
+#ifdef CONFIG_PM
+	.suspend =	acm_suspend,
+	.resume =	acm_resume,
+	.reset_resume =	acm_reset_resume,
+	.supports_autosuspend = 1,
+#endif
 };
 
 static const struct tty_operations acm_ops = {
