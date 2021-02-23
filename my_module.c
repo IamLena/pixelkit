@@ -549,6 +549,7 @@ static void acm_process_read_urb(struct acm *acm, struct urb *urb)
 
 static void acm_read_bulk_callback(struct urb *urb)
 {
+	prink(KERN_INFO "acm_read_bulk_callback called");
 	struct acm_rb *rb = urb->context;
 	struct acm *acm = rb->instance;
 	int status = urb->status;
