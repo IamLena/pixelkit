@@ -334,7 +334,7 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 
 // 	return sprintf(buf, "%d", acm->ctrl_caps);
 // }
-// static DEVICE_ATTR_RO(bmCapabilities);
+static DEVICE_ATTR_RO(bmCapabilities);
 
 // static ssize_t wCountryCodes_show
 // (struct device *dev, struct device_attribute *attr, char *buf)
@@ -347,7 +347,7 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 // 	return acm->country_code_size;
 // }
 
-// static DEVICE_ATTR_RO(wCountryCodes);
+static DEVICE_ATTR_RO(wCountryCodes);
 
 // static ssize_t iCountryCodeRelDate_show
 // (struct device *dev, struct device_attribute *attr, char *buf)
@@ -359,7 +359,7 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 // 	return sprintf(buf, "%d", acm->country_rel_date);
 // }
 
-// static DEVICE_ATTR_RO(iCountryCodeRelDate);
+static DEVICE_ATTR_RO(iCountryCodeRelDate);
 /*
  * Interrupt handlers for various ACM device responses
  */
