@@ -132,8 +132,7 @@ static struct tty_driver *acm_tty_driver;
 static DEFINE_IDR(acm_minors);
 static DEFINE_MUTEX(acm_minors_lock);
 
-static void acm_tty_set_termios(struct tty_struct *tty,
-				struct ktermios *termios_old);
+static void acm_tty_set_termios(struct tty_struct *tty, struct ktermios *termios_old);
 
 /*
  * acm_minors accessors
@@ -145,6 +144,7 @@ static void acm_tty_set_termios(struct tty_struct *tty,
  */
 static struct acm *acm_get_by_minor(unsigned int minor)
 {
+	printk(KERN_INFO "acm_get_by_minor called\n");
 	struct acm *acm;
 
 	mutex_lock(&acm_minors_lock);
@@ -168,6 +168,7 @@ static struct acm *acm_get_by_minor(unsigned int minor)
  */
 static int acm_alloc_minor(struct acm *acm)
 {
+	printk(KERN_INFO "acm_alloc_minor called\n");
 	int minor;
 
 	mutex_lock(&acm_minors_lock);
@@ -180,6 +181,7 @@ static int acm_alloc_minor(struct acm *acm)
 /* Release the minor number associated with 'acm'.  */
 static void acm_release_minor(struct acm *acm)
 {
+	printk(KERN_INFO "acm_release_minor called\n");
 	mutex_lock(&acm_minors_lock);
 	idr_remove(&acm_minors, acm->minor);
 	mutex_unlock(&acm_minors_lock);
@@ -192,6 +194,7 @@ static void acm_release_minor(struct acm *acm)
 static int acm_ctrl_msg(struct acm *acm, int request, int value,
 							void *buf, int len)
 {
+	printk(KERN_INFO "acm_ctrl_msg called\n");
 	int retval;
 
 	retval = usb_autopm_get_interface(acm->control);
@@ -217,6 +220,7 @@ static int acm_ctrl_msg(struct acm *acm, int request, int value,
  */
 static inline int acm_set_control(struct acm *acm, int control)
 {
+	printk(KERN_INFO "acm_set_control called\n");
 	return acm_ctrl_msg(acm, USB_CDC_REQ_SET_CONTROL_LINE_STATE,
 			control, NULL, 0);
 }
@@ -228,6 +232,7 @@ static inline int acm_set_control(struct acm *acm, int control)
 
 static void acm_kill_urbs(struct acm *acm)
 {
+	printk(KERN_INFO "acm_kill_urbs called\n");
 	int i;
 
 	usb_kill_urb(acm->ctrlurb);
@@ -244,6 +249,7 @@ static void acm_kill_urbs(struct acm *acm)
 
 static int acm_wb_alloc(struct acm *acm)
 {
+	printk(KERN_INFO "acm_wb_alloc called\n");
 	int i, wbn;
 	struct acm_wb *wb;
 
@@ -264,6 +270,7 @@ static int acm_wb_alloc(struct acm *acm)
 
 static int acm_wb_is_avail(struct acm *acm)
 {
+	printk(KERN_INFO "acm_wb_is_avail called\n");
 	int i, n;
 	unsigned long flags;
 
@@ -281,6 +288,7 @@ static int acm_wb_is_avail(struct acm *acm)
  */
 static void acm_write_done(struct acm *acm, struct acm_wb *wb)
 {
+	printk(KERN_INFO "acm_write_done called\n");
 	wb->use = false;
 	acm->transmitting--;
 	usb_autopm_put_interface_async(acm->control);
@@ -294,6 +302,7 @@ static void acm_write_done(struct acm *acm, struct acm_wb *wb)
 
 static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 {
+	printk(KERN_INFO "acm_start_wb called\n");
 	int rc;
 
 	acm->transmitting++;
@@ -319,6 +328,7 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 static ssize_t bmCapabilities_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
+	printk(KERN_INFO "bmCapabilities_show called\n");
 	struct usb_interface *intf = to_usb_interface(dev);
 	struct acm *acm = usb_get_intfdata(intf);
 
@@ -329,6 +339,7 @@ static DEVICE_ATTR_RO(bmCapabilities);
 static ssize_t wCountryCodes_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
+	printk(KERN_INFO "wCountryCodes_show called\n");
 	struct usb_interface *intf = to_usb_interface(dev);
 	struct acm *acm = usb_get_intfdata(intf);
 
@@ -341,6 +352,7 @@ static DEVICE_ATTR_RO(wCountryCodes);
 static ssize_t iCountryCodeRelDate_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
+	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
 	struct usb_interface *intf = to_usb_interface(dev);
 	struct acm *acm = usb_get_intfdata(intf);
 
@@ -354,6 +366,7 @@ static DEVICE_ATTR_RO(iCountryCodeRelDate);
 
 static void acm_process_notification(struct acm *acm, unsigned char *buf)
 {
+	printk(KERN_INFO "acm_process_notification called\n");
 	int newctrl;
 	int difference;
 	unsigned long flags;
@@ -420,6 +433,7 @@ static void acm_process_notification(struct acm *acm, unsigned char *buf)
 /* control interface reports status changes with "interrupt" transfers */
 static void acm_ctrl_irq(struct urb *urb)
 {
+	printk(KERN_INFO "acm_ctrl_irq called\n");
 	struct acm *acm = urb->context;
 	struct usb_cdc_notification *dr = urb->transfer_buffer;
 	unsigned int current_size = urb->actual_length;
@@ -500,6 +514,7 @@ exit:
 
 static int acm_submit_read_urb(struct acm *acm, int index, gfp_t mem_flags)
 {
+	printk(KERN_INFO "acm_submit_read_urb called\n");
 	int res;
 
 	if (!test_and_clear_bit(index, &acm->read_urbs_free))
@@ -525,6 +540,7 @@ static int acm_submit_read_urb(struct acm *acm, int index, gfp_t mem_flags)
 
 static int acm_submit_read_urbs(struct acm *acm, gfp_t mem_flags)
 {
+	printk(KERN_INFO "acm_submit_read_urbs called\n");
 	int res;
 	int i;
 
@@ -539,6 +555,7 @@ static int acm_submit_read_urbs(struct acm *acm, gfp_t mem_flags)
 
 static void acm_process_read_urb(struct acm *acm, struct urb *urb)
 {
+	printk(KERN_INFO "acm_process_read_urb called\n");
 	if (!urb->actual_length)
 		return;
 
@@ -549,6 +566,7 @@ static void acm_process_read_urb(struct acm *acm, struct urb *urb)
 
 static void acm_read_bulk_callback(struct urb *urb)
 {
+	printk(KERN_INFO "acm_read_bulk_callback called\n");
 	struct acm_rb *rb = urb->context;
 	struct acm *acm = rb->instance;
 	int status = urb->status;
@@ -628,6 +646,7 @@ static void acm_read_bulk_callback(struct urb *urb)
 /* data interface wrote those outgoing bytes */
 static void acm_write_bulk(struct urb *urb)
 {
+	printk(KERN_INFO "acm_write_bulk called\n");
 	struct acm_wb *wb = urb->context;
 	struct acm *acm = wb->instance;
 	unsigned long flags;
@@ -648,6 +667,7 @@ static void acm_write_bulk(struct urb *urb)
 
 static void acm_softint(struct work_struct *work)
 {
+	printk(KERN_INFO "acm_softint called\n");
 	int i;
 	struct acm *acm = container_of(work, struct acm, dwork.work);
 
@@ -678,6 +698,7 @@ static void acm_softint(struct work_struct *work)
 
 static int acm_tty_install(struct tty_driver *driver, struct tty_struct *tty)
 {
+	printk(KERN_INFO "acm_tty_install called\n");
 	struct acm *acm;
 	int retval;
 
@@ -700,6 +721,7 @@ error_init_termios:
 
 static int acm_tty_open(struct tty_struct *tty, struct file *filp)
 {
+	printk(KERN_INFO "acm_tty_open called\n");
 	struct acm *acm = tty->driver_data;
 
 	return tty_port_open(&acm->port, tty, filp);
@@ -707,6 +729,7 @@ static int acm_tty_open(struct tty_struct *tty, struct file *filp)
 
 static void acm_port_dtr_rts(struct tty_port *port, int raise)
 {
+	printk(KERN_INFO "acm_port_dtr_rts called\n");
 	struct acm *acm = container_of(port, struct acm, port);
 	int val;
 	int res;
@@ -726,6 +749,7 @@ static void acm_port_dtr_rts(struct tty_port *port, int raise)
 
 static int acm_port_activate(struct tty_port *port, struct tty_struct *tty)
 {
+	printk(KERN_INFO "acm_port_activate called\n");
 	struct acm *acm = container_of(port, struct acm, port);
 	int retval = -ENODEV;
 	int i;
@@ -785,6 +809,7 @@ disconnected:
 
 static void acm_port_destruct(struct tty_port *port)
 {
+	printk(KERN_INFO "acm_port_destruct called\n");
 	struct acm *acm = container_of(port, struct acm, port);
 
 	acm_release_minor(acm);
@@ -795,6 +820,7 @@ static void acm_port_destruct(struct tty_port *port)
 
 static void acm_port_shutdown(struct tty_port *port)
 {
+	printk(KERN_INFO "acm_port_shutdown called\n");
 	struct acm *acm = container_of(port, struct acm, port);
 	struct urb *urb;
 	struct acm_wb *wb;
@@ -824,6 +850,7 @@ static void acm_port_shutdown(struct tty_port *port)
 
 static void acm_tty_cleanup(struct tty_struct *tty)
 {
+	printk(KERN_INFO "acm_tty_cleanup called\n");
 	struct acm *acm = tty->driver_data;
 
 	tty_port_put(&acm->port);
@@ -831,6 +858,7 @@ static void acm_tty_cleanup(struct tty_struct *tty)
 
 static void acm_tty_close(struct tty_struct *tty, struct file *filp)
 {
+	printk(KERN_INFO "acm_tty_close called\n");
 	struct acm *acm = tty->driver_data;
 
 	tty_port_close(&acm->port, tty, filp);
@@ -839,6 +867,7 @@ static void acm_tty_close(struct tty_struct *tty, struct file *filp)
 static int acm_tty_write(struct tty_struct *tty,
 					const unsigned char *buf, int count)
 {
+	printk(KERN_INFO "acm_tty_write called\n");
 	struct acm *acm = tty->driver_data;
 	int stat;
 	unsigned long flags;
@@ -892,6 +921,7 @@ static int acm_tty_write(struct tty_struct *tty,
 
 static int acm_tty_write_room(struct tty_struct *tty)
 {
+	printk(KERN_INFO "acm_tty_write_room called\n");
 	struct acm *acm = tty->driver_data;
 	/*
 	 * Do not let the line discipline to know that we have a reserve,
@@ -902,6 +932,7 @@ static int acm_tty_write_room(struct tty_struct *tty)
 
 static int acm_tty_tiocmget(struct tty_struct *tty)
 {
+	printk(KERN_INFO "acm_tty_tiocmget called\n");
 	struct acm *acm = tty->driver_data;
 
 	return (acm->ctrlout & ACM_CTRL_DTR ? TIOCM_DTR : 0) |
@@ -915,6 +946,7 @@ static int acm_tty_tiocmget(struct tty_struct *tty)
 static int acm_tty_tiocmset(struct tty_struct *tty,
 			    unsigned int set, unsigned int clear)
 {
+	printk(KERN_INFO "acm_tty_tiocmset called\n");
 	struct acm *acm = tty->driver_data;
 	unsigned int newctrl;
 
@@ -933,6 +965,7 @@ static int acm_tty_tiocmset(struct tty_struct *tty,
 
 static int wait_serial_change(struct acm *acm, unsigned long arg)
 {
+	printk(KERN_INFO "wait_serial_change called\n");
 	int rv = 0;
 	DECLARE_WAITQUEUE(wait, current);
 	struct async_icount old, new;
@@ -977,6 +1010,7 @@ static int wait_serial_change(struct acm *acm, unsigned long arg)
 static int acm_tty_ioctl(struct tty_struct *tty,
 					unsigned int cmd, unsigned long arg)
 {
+	printk(KERN_INFO "acm_tty_ioctl called\n");
 	struct acm *acm = tty->driver_data;
 	int rv = -ENOIOCTLCMD;
 
@@ -998,6 +1032,7 @@ static int acm_tty_ioctl(struct tty_struct *tty,
 static void acm_tty_set_termios(struct tty_struct *tty,
 						struct ktermios *termios_old)
 {
+	printk(KERN_INFO "acm_tty_set_termios called\n");
 	struct acm *acm = tty->driver_data;
 	struct ktermios *termios = &tty->termios;
 	struct usb_cdc_line_coding newline;
@@ -1061,6 +1096,7 @@ static const struct tty_port_operations acm_port_ops = {
 /* Little helpers: write/read buffers free */
 static void acm_write_buffers_free(struct acm *acm)
 {
+	printk(KERN_INFO "acm_write_buffers_free called\n");
 	int i;
 	struct acm_wb *wb;
 
@@ -1070,6 +1106,7 @@ static void acm_write_buffers_free(struct acm *acm)
 
 static void acm_read_buffers_free(struct acm *acm)
 {
+	printk(KERN_INFO "acm_read_buffers_free called\n");
 	int i;
 
 	for (i = 0; i < acm->rx_buflimit; i++)
@@ -1080,6 +1117,7 @@ static void acm_read_buffers_free(struct acm *acm)
 /* Little helper: write buffers allocate */
 static int acm_write_buffers_alloc(struct acm *acm)
 {
+	printk(KERN_INFO "acm_write_buffers_alloc called\n");
 	int i;
 	struct acm_wb *wb;
 
@@ -1124,7 +1162,6 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	int combined_interfaces = 0;
 	struct device *tty_dev;
 	int rv = -ENOMEM;
-	int res;
 
 	memset(&h, 0x00, sizeof(struct usb_cdc_parsed_header));
 	num_rx_buf = ACM_NR;
@@ -1223,7 +1260,8 @@ static int acm_probe(struct usb_interface *intf, const struct usb_device_id *id)
 			"The data interface has switched endpoints\n");
 		swap(epread, epwrite);
 	}
-made_compressed_probe:
+
+// made_compressed_probe:
 	dev_dbg(&intf->dev, "interfaces are valid\n");
 
 	acm = kzalloc(sizeof(struct acm), GFP_KERNEL);
@@ -1425,6 +1463,7 @@ alloc_fail:
 
 static void acm_disconnect(struct usb_interface *intf)
 {
+	printk(KERN_INFO "acm_disconnect called\n");
 	struct acm *acm = usb_get_intfdata(intf);
 	struct tty_struct *tty;
 	int i;
@@ -1479,6 +1518,7 @@ static void acm_disconnect(struct usb_interface *intf)
 #ifdef CONFIG_PM
 static int acm_suspend(struct usb_interface *intf, pm_message_t message)
 {
+	printk(KERN_INFO "acm_suspend called\n");
 	struct acm *acm = usb_get_intfdata(intf);
 	int cnt;
 
@@ -1504,6 +1544,7 @@ static int acm_suspend(struct usb_interface *intf, pm_message_t message)
 
 static int acm_resume(struct usb_interface *intf)
 {
+	printk(KERN_INFO "acm_resume called\n");
 	struct acm *acm = usb_get_intfdata(intf);
 	struct urb *urb;
 	int rv = 0;
@@ -1541,6 +1582,7 @@ out:
 
 static int acm_reset_resume(struct usb_interface *intf)
 {
+	printk(KERN_INFO "acm_reset_resume called\n");
 	struct acm *acm = usb_get_intfdata(intf);
 
 	if (tty_port_initialized(&acm->port))
