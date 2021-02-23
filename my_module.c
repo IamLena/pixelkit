@@ -325,39 +325,39 @@ static int acm_start_wb(struct acm *acm, struct acm_wb *wb)
 /*
  * attributes exported through sysfs
  */
-// static ssize_t bmCapabilities_show
-// (struct device *dev, struct device_attribute *attr, char *buf)
-// {
-// 	printk(KERN_INFO "bmCapabilities_show called\n");
-// 	struct usb_interface *intf = to_usb_interface(dev);
-// 	struct acm *acm = usb_get_intfdata(intf);
+static ssize_t bmCapabilities_show
+(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	printk(KERN_INFO "bmCapabilities_show called\n");
+	struct usb_interface *intf = to_usb_interface(dev);
+	struct acm *acm = usb_get_intfdata(intf);
 
-// 	return sprintf(buf, "%d", acm->ctrl_caps);
-// }
+	return sprintf(buf, "%d", acm->ctrl_caps);
+}
 static DEVICE_ATTR_RO(bmCapabilities);
 
-// static ssize_t wCountryCodes_show
-// (struct device *dev, struct device_attribute *attr, char *buf)
-// {
-// 	printk(KERN_INFO "wCountryCodes_show called\n");
-// 	struct usb_interface *intf = to_usb_interface(dev);
-// 	struct acm *acm = usb_get_intfdata(intf);
+static ssize_t wCountryCodes_show
+(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	printk(KERN_INFO "wCountryCodes_show called\n");
+	struct usb_interface *intf = to_usb_interface(dev);
+	struct acm *acm = usb_get_intfdata(intf);
 
-// 	memcpy(buf, acm->country_codes, acm->country_code_size);
-// 	return acm->country_code_size;
-// }
+	memcpy(buf, acm->country_codes, acm->country_code_size);
+	return acm->country_code_size;
+}
 
 static DEVICE_ATTR_RO(wCountryCodes);
 
-// static ssize_t iCountryCodeRelDate_show
-// (struct device *dev, struct device_attribute *attr, char *buf)
-// {
-// 	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
-// 	struct usb_interface *intf = to_usb_interface(dev);
-// 	struct acm *acm = usb_get_intfdata(intf);
+static ssize_t iCountryCodeRelDate_show
+(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
+	struct usb_interface *intf = to_usb_interface(dev);
+	struct acm *acm = usb_get_intfdata(intf);
 
-// 	return sprintf(buf, "%d", acm->country_rel_date);
-// }
+	return sprintf(buf, "%d", acm->country_rel_date);
+}
 
 static DEVICE_ATTR_RO(iCountryCodeRelDate);
 /*
