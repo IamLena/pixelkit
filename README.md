@@ -71,6 +71,3 @@ tty flags
 https://www.gnu.org/software/libc/manual/html_node/Local-Modes.html
 https://www.gnu.org/software/coreutils/manual/html_node/Input.html#Input
 
-
-681513
-873541

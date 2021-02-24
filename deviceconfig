@@ -5,15 +5,15 @@ Device Descriptor:
   bDescriptorType         1
   bcdUSB               1.10
   bDeviceClass            2 Communications
-  bDeviceSubClass         0 
-  bDeviceProtocol         0 
+  bDeviceSubClass         0
+  bDeviceProtocol         0
   bMaxPacketSize0         8
   idVendor           0x2341 Arduino SA
   idProduct          0x0043 Uno R3 (CDC ACM)
   bcdDevice            0.01
-  iManufacturer           1 
-  iProduct                2 
-  iSerial               220 
+  iManufacturer           1
+  iProduct                2
+  iSerial               220
   bNumConfigurations      1
   Configuration Descriptor:
     bLength                 9
@@ -21,7 +21,7 @@ Device Descriptor:
     wTotalLength           62
     bNumInterfaces          2
     bConfigurationValue     1
-    iConfiguration          0 
+    iConfiguration          0
     bmAttributes         0xc0
       Self Powered
     MaxPower              100mA
@@ -34,7 +34,7 @@ Device Descriptor:
       bInterfaceClass         2 Communications
       bInterfaceSubClass      2 Abstract (modem)
       bInterfaceProtocol      1 AT-commands (v.25ter)
-      iInterface              0 
+      iInterface              0
       CDC Header:
         bcdCDC               10.01
       CDC ACM:
@@ -43,7 +43,7 @@ Device Descriptor:
           line coding and serial state
       CDC Union:
         bMasterInterface        0
-        bSlaveInterface         1 
+        bSlaveInterface         1
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -62,8 +62,8 @@ Device Descriptor:
       bNumEndpoints           2
       bInterfaceClass        10 CDC Data
       bInterfaceSubClass      0 Unused
-      bInterfaceProtocol      0 
-      iInterface              0 
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5

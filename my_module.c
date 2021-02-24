@@ -12,7 +12,7 @@
 #include <linux/mutex.h>
 #include <linux/uaccess.h>
 #include <linux/usb.h>
-#include <linux/usb/cdc.h>
+#include <linux/usb/cdc.h> //USB Communications Device Class
 #include <asm/byteorder.h>
 #include <asm/unaligned.h>
 #include <linux/idr.h>
@@ -1478,18 +1478,21 @@ static int __init acm_init(void)
 
 	tty_set_operations(acm_tty_driver, &acm_ops);
 
+	printk(KERN_INFO "register tty\n");
 	retval = tty_register_driver(acm_tty_driver);
 	if (retval) {
 		put_tty_driver(acm_tty_driver);
 		return retval;
 	}
-
+	printk(KERN_INFO "regisration finished tty\n");
+	printk(KERN_INFO "register usb\n");
 	retval = usb_register(&acm_driver);
 	if (retval) {
 		tty_unregister_driver(acm_tty_driver);
 		put_tty_driver(acm_tty_driver);
 		return retval;
 	}
+	printk(KERN_INFO "regisration finished usb\n");
 
 	printk(KERN_INFO KBUILD_MODNAME ": " DRIVER_DESC "\n");
 
