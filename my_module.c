@@ -781,6 +781,20 @@ static void acm_tty_close(struct tty_struct *tty, struct file *filp)
 	tty_port_close(&acm->port, tty, filp);
 }
 
+static int acm_wb_is_avail(struct acm *acm)
+{
+	int i, n;
+	unsigned long flags;
+
+	n = ACM_NW;
+	spin_lock_irqsave(&acm->write_lock, flags);
+	for (i = 0; i < ACM_NW; i++)
+		if(acm->wb[i].use)
+			n--;
+	spin_unlock_irqrestore(&acm->write_lock, flags);
+	return n;
+}
+
 static int acm_tty_write_room(struct tty_struct *tty)
 {
 	struct acm *acm = tty->driver_data;
