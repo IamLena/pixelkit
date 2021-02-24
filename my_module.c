@@ -606,6 +606,7 @@ static void acm_softint(struct work_struct *work)
 
 	if (test_and_clear_bit(EVENT_TTY_WAKEUP, &acm->flags))
 		tty_port_tty_wakeup(&acm->port);
+	printk(KERN_INFO "acm_softint done its work\n");
 }
 
 /*
@@ -778,6 +779,16 @@ static void acm_tty_close(struct tty_struct *tty, struct file *filp)
 	struct acm *acm = tty->driver_data;
 
 	tty_port_close(&acm->port, tty, filp);
+}
+
+static int acm_tty_write_room(struct tty_struct *tty)
+{
+	struct acm *acm = tty->driver_data;
+	/*
+	 * Do not let the line discipline to know that we have a reserve,
+	 * or it might get too enthusiastic.
+	 */
+	return acm_wb_is_avail(acm) ? acm->writesize : 0;
 }
 
 static int acm_tty_write(struct tty_struct *tty,
@@ -1447,6 +1458,7 @@ static const struct tty_operations acm_ops = {
 	.close =		acm_tty_close,
 	.cleanup =		acm_tty_cleanup,
 	.write =		acm_tty_write,
+	.write_room =		acm_tty_write_room,
 	.ioctl =		acm_tty_ioctl,
 	.set_termios =	acm_tty_set_termios,
 };
