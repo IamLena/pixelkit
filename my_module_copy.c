@@ -347,17 +347,14 @@ static DEVICE_ATTR_RO(iCountryCodeRelDate);
 /* control interface reports status changes with "interrupt" transfers */
 static void ard_ctrl_irq(struct urb *urb)
 {
-	struct ard *ard;
-	struct usb_cdc_notification *dr;
-
-	printk(KERN_INFO KBUILD_MODNAME ": ard_ctrl_irq called\n");
-	ard = urb->context;
-	dr = urb->transfer_buffer;
+	struct ard *ard = urb->context;
+	struct usb_cdc_notification *dr = urb->transfer_buffer;
 	unsigned int current_size = urb->actual_length;
 	unsigned int expected_size, copy_size, alloc_size;
 	int retval;
 	int status = urb->status;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_ctrl_irq called\n");
 	switch (status) {
 	case 0:
 		/* success */
