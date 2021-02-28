@@ -1,7 +1,7 @@
 ifneq ($(KERNELRELEASE),)
 	# obj-m := usb_skeleton.o
 	# obj-m := mymodule.o
-	obj-m := my_module_copy.o
+	obj-m := my_module_ard.o
 else
 	CURRENT = $(shell uname -r)
 	KDIR = /lib/modules/$(CURRENT)/build
