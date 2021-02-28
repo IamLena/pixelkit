@@ -136,8 +136,8 @@ static void ard_tty_set_termios(struct tty_struct *tty, struct ktermios *termios
  */
 static struct ard *ard_get_by_minor(unsigned int minor)
 {
-	printk(KERN_INFO "ard_get_by_minor called\n");
 	struct ard *ard;
+	printk(KERN_INFO KBUILD_MODNAME ": ard_get_by_minor called\n");
 
 	mutex_lock(&ard_minors_lock);
 	ard = idr_find(&ard_minors, minor);
@@ -160,8 +160,8 @@ static struct ard *ard_get_by_minor(unsigned int minor)
  */
 static int ard_alloc_minor(struct ard *ard)
 {
-	printk(KERN_INFO "ard_alloc_minor called\n");
 	int minor;
+	printk(KERN_INFO KBUILD_MODNAME ": ard_alloc_minor called\n");
 
 	mutex_lock(&ard_minors_lock);
 	minor = idr_alloc(&ard_minors, ard, 0, ARD_TTY_MINORS, GFP_KERNEL);
@@ -173,7 +173,7 @@ static int ard_alloc_minor(struct ard *ard)
 /* Release the minor number associated with 'ard'.  */
 static void ard_release_minor(struct ard *ard)
 {
-	printk(KERN_INFO "ard_release_minor called\n");
+	printk(KERN_INFO KBUILD_MODNAME ": ard_release_minor called\n");
 	mutex_lock(&ard_minors_lock);
 	idr_remove(&ard_minors, ard->minor);
 	mutex_unlock(&ard_minors_lock);
@@ -186,8 +186,8 @@ static void ard_release_minor(struct ard *ard)
 static int ard_ctrl_msg(struct ard *ard, int request, int value,
 							void *buf, int len)
 {
-	printk(KERN_INFO "ard_ctrl_msg called\n");
 	int retval;
+	printk(KERN_INFO KBUILD_MODNAME ": ard_ctrl_msg called\n");
 
 	retval = usb_autopm_get_interface(ard->control);
 	if (retval)
@@ -212,7 +212,7 @@ static int ard_ctrl_msg(struct ard *ard, int request, int value,
  */
 static inline int ard_set_control(struct ard *ard, int control)
 {
-	printk(KERN_INFO "ard_set_control called\n");
+	printk(KERN_INFO KBUILD_MODNAME ": ard_set_control called\n");
 	return ard_ctrl_msg(ard, USB_CDC_REQ_SET_CONTROL_LINE_STATE,
 			control, NULL, 0);
 }
@@ -224,8 +224,8 @@ static inline int ard_set_control(struct ard *ard, int control)
 
 static void ard_kill_urbs(struct ard *ard)
 {
-	printk(KERN_INFO "ard_kill_urbs called\n");
 	int i;
+	printk(KERN_INFO KBUILD_MODNAME ": ard_kill_urbs called\n");
 
 	usb_kill_urb(ard->ctrlurb);
 	for (i = 0; i < ARD_NW; i++)
@@ -241,10 +241,10 @@ static void ard_kill_urbs(struct ard *ard)
 
 static int ard_wb_alloc(struct ard *ard)
 {
-	printk(KERN_INFO "ard_wb_alloc called\n");
 	int i, wbn;
 	struct ard_wb *wb;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_wb_alloc called\n");
 	wbn = 0;
 	i = 0;
 	for (;;) {
@@ -265,7 +265,7 @@ static int ard_wb_alloc(struct ard *ard)
  */
 static void ard_write_done(struct ard *ard, struct ard_wb *wb)
 {
-	printk(KERN_INFO "ard_write_done called\n");
+	printk(KERN_INFO KBUILD_MODNAME ": ard_write_done called\n");
 	wb->use = false;
 	ard->transmitting--;
 	usb_autopm_put_interface_async(ard->control);
@@ -279,8 +279,8 @@ static void ard_write_done(struct ard *ard, struct ard_wb *wb)
 
 static int ard_start_wb(struct ard *ard, struct ard_wb *wb)
 {
-	printk(KERN_INFO "ard_start_wb called\n");
 	int rc;
+	printk(KERN_INFO KBUILD_MODNAME ": ard_start_wb called\n");
 
 	ard->transmitting++;
 
@@ -305,10 +305,12 @@ static int ard_start_wb(struct ard *ard, struct ard_wb *wb)
 static ssize_t bmCapabilities_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
-	printk(KERN_INFO "bmCapabilities_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct ard *ard = usb_get_intfdata(intf);
+	struct usb_interface *intf;
+	struct ard *ard;
 
+	printk(KERN_INFO KBUILD_MODNAME ": bmCapabilities_show called\n");
+	intf = to_usb_interface(dev);
+	ard = usb_get_intfdata(intf);
 	return sprintf(buf, "%d", ard->ctrl_caps);
 }
 static DEVICE_ATTR_RO(bmCapabilities);
@@ -316,10 +318,12 @@ static DEVICE_ATTR_RO(bmCapabilities);
 static ssize_t wCountryCodes_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
-	printk(KERN_INFO "wCountryCodes_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct ard *ard = usb_get_intfdata(intf);
+	struct usb_interface *intf;
+	struct ard *ard;
 
+	printk(KERN_INFO KBUILD_MODNAME ": wCountryCodes_show called\n");
+	intf = to_usb_interface(dev);
+	ard = usb_get_intfdata(intf);
 	memcpy(buf, ard->country_codes, ard->country_code_size);
 	return ard->country_code_size;
 }
@@ -329,10 +333,12 @@ static DEVICE_ATTR_RO(wCountryCodes);
 static ssize_t iCountryCodeRelDate_show
 (struct device *dev, struct device_attribute *attr, char *buf)
 {
-	printk(KERN_INFO "iCountryCodeRelDate_show called\n");
-	struct usb_interface *intf = to_usb_interface(dev);
-	struct ard *ard = usb_get_intfdata(intf);
+	struct usb_interface *intf;
+	struct ard *ard;
 
+	printk(KERN_INFO KBUILD_MODNAME ": iCountryCodeRelDate_show called\n");
+	intf = to_usb_interface(dev);
+	ard = usb_get_intfdata(intf);
 	return sprintf(buf, "%d", ard->country_rel_date);
 }
 
@@ -341,9 +347,12 @@ static DEVICE_ATTR_RO(iCountryCodeRelDate);
 /* control interface reports status changes with "interrupt" transfers */
 static void ard_ctrl_irq(struct urb *urb)
 {
-	printk(KERN_INFO "ard_ctrl_irq called\n");
-	struct ard *ard = urb->context;
-	struct usb_cdc_notification *dr = urb->transfer_buffer;
+	struct ard *ard;
+	struct usb_cdc_notification *dr;
+
+	printk(KERN_INFO KBUILD_MODNAME ": ard_ctrl_irq called\n");
+	ard = urb->context;
+	dr = urb->transfer_buffer;
 	unsigned int current_size = urb->actual_length;
 	unsigned int expected_size, copy_size, alloc_size;
 	int retval;
@@ -422,9 +431,9 @@ exit:
 
 static int ard_submit_read_urb(struct ard *ard, int index, gfp_t mem_flags)
 {
-	printk(KERN_INFO "ard_submit_read_urb called\n");
 	int res;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_submit_read_urb called\n");
 	if (!test_and_clear_bit(index, &ard->read_urbs_free))
 		return 0;
 
@@ -448,10 +457,10 @@ static int ard_submit_read_urb(struct ard *ard, int index, gfp_t mem_flags)
 
 static int ard_submit_read_urbs(struct ard *ard, gfp_t mem_flags)
 {
-	printk(KERN_INFO "ard_submit_read_urbs called\n");
 	int res;
 	int i;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_submit_read_urbs called\n");
 	for (i = 0; i < ard->rx_buflimit; ++i) {
 		res = ard_submit_read_urb(ard, i, mem_flags);
 		if (res)
@@ -463,7 +472,7 @@ static int ard_submit_read_urbs(struct ard *ard, gfp_t mem_flags)
 
 static void ard_process_read_urb(struct ard *ard, struct urb *urb)
 {
-	printk(KERN_INFO "ard_process_read_urb called\n");
+	printk(KERN_INFO KBUILD_MODNAME ": ard_process_read_urb called\n");
 	if (!urb->actual_length)
 		return;
 
@@ -474,7 +483,6 @@ static void ard_process_read_urb(struct ard *ard, struct urb *urb)
 
 static void ard_read_bulk_callback(struct urb *urb)
 {
-	printk(KERN_INFO "ard_read_bulk_callback called\n");
 	struct ard_rb *rb = urb->context;
 	struct ard *ard = rb->instance;
 	int status = urb->status;
@@ -482,6 +490,7 @@ static void ard_read_bulk_callback(struct urb *urb)
 	bool stalled = false;
 	bool cooldown = false;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_read_bulk_callback called\n");
 	dev_vdbg(&ard->data->dev, "got urb %d, len %d, status %d\n",
 		rb->index, urb->actual_length, status);
 
@@ -554,12 +563,12 @@ static void ard_read_bulk_callback(struct urb *urb)
 /* data interface wrote those outgoing bytes */
 static void ard_write_bulk(struct urb *urb)
 {
-	printk(KERN_INFO "ard_write_bulk called\n");
 	struct ard_wb *wb = urb->context;
 	struct ard *ard = wb->instance;
 	unsigned long flags;
 	int status = urb->status;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_write_bulk called\n");
 	if (status || (urb->actual_length != urb->transfer_buffer_length))
 		dev_vdbg(&ard->data->dev, "wrote len %d/%d, status %d\n",
 			urb->actual_length,
@@ -575,10 +584,10 @@ static void ard_write_bulk(struct urb *urb)
 
 static void ard_softint(struct work_struct *work)
 {
-	printk(KERN_INFO "ard_softint called\n");
 	int i;
 	struct ard *ard = container_of(work, struct ard, dwork.work);
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_softint called\n");
 	if (test_bit(EVENT_RX_STALL, &ard->flags)) {
 		smp_mb(); /* against ard_suspend() */
 		if (!ard->susp_count) {
@@ -598,7 +607,6 @@ static void ard_softint(struct work_struct *work)
 
 	if (test_and_clear_bit(EVENT_TTY_WAKEUP, &ard->flags))
 		tty_port_tty_wakeup(&ard->port);
-	printk(KERN_INFO "ard_softint done its work\n");
 }
 
 /*
@@ -607,10 +615,10 @@ static void ard_softint(struct work_struct *work)
 
 static int ard_tty_install(struct tty_driver *driver, struct tty_struct *tty)
 {
-	printk(KERN_INFO "ard_tty_install called\n");
 	struct ard *ard;
 	int retval;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_install called\n");
 	ard = ard_get_by_minor(tty->index);
 	if (!ard)
 		return -ENODEV;
@@ -630,19 +638,19 @@ error_init_termios:
 
 static int ard_tty_open(struct tty_struct *tty, struct file *filp)
 {
-	printk(KERN_INFO "ard_tty_open called\n");
 	struct ard *ard = tty->driver_data;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_open called\n");
 	return tty_port_open(&ard->port, tty, filp);
 }
 
 static void ard_port_dtr_rts(struct tty_port *port, int raise)
 {
-	printk(KERN_INFO "ard_port_dtr_rts called\n");
 	struct ard *ard = container_of(port, struct ard, port);
 	int val;
 	int res;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_port_dtr_rts called\n");
 	if (raise)
 		val = ARD_CTRL_DTR | ARD_CTRL_RTS;
 	else
@@ -658,11 +666,11 @@ static void ard_port_dtr_rts(struct tty_port *port, int raise)
 
 static int ard_port_activate(struct tty_port *port, struct tty_struct *tty)
 {
-	printk(KERN_INFO "ard_port_activate called\n");
 	struct ard *ard = container_of(port, struct ard, port);
 	int retval = -ENODEV;
 	int i;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_port_activate called\n");
 	mutex_lock(&ard->mutex);
 	if (ard->disconnected)
 		goto disconnected;
@@ -718,9 +726,9 @@ disconnected:
 
 static void ard_port_destruct(struct tty_port *port)
 {
-	printk(KERN_INFO "ard_port_destruct called\n");
 	struct ard *ard = container_of(port, struct ard, port);
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_port_destruct called\n");
 	ard_release_minor(ard);
 	usb_put_intf(ard->control);
 	kfree(ard->country_codes);
@@ -729,11 +737,11 @@ static void ard_port_destruct(struct tty_port *port)
 
 static void ard_port_shutdown(struct tty_port *port)
 {
-	printk(KERN_INFO "ard_port_shutdown called\n");
 	struct ard *ard = container_of(port, struct ard, port);
 	struct urb *urb;
 	struct ard_wb *wb;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_port_shutdown called\n");
 	/*
 	 * Need to grab write_lock to prevent race with resume, but no need to
 	 * hold it due to the tty-port initialised flag.
@@ -759,17 +767,17 @@ static void ard_port_shutdown(struct tty_port *port)
 
 static void ard_tty_cleanup(struct tty_struct *tty)
 {
-	printk(KERN_INFO "ard_tty_cleanup called\n");
 	struct ard *ard = tty->driver_data;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_cleanup called\n");
 	tty_port_put(&ard->port);
 }
 
 static void ard_tty_close(struct tty_struct *tty, struct file *filp)
 {
-	printk(KERN_INFO "ard_tty_close called\n");
 	struct ard *ard = tty->driver_data;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_close called\n");
 	tty_port_close(&ard->port, tty, filp);
 }
 
@@ -800,13 +808,13 @@ static int ard_tty_write_room(struct tty_struct *tty)
 static int ard_tty_write(struct tty_struct *tty,
 					const unsigned char *buf, int count)
 {
-	printk(KERN_INFO "ard_tty_write called\n");
 	struct ard *ard = tty->driver_data;
 	int stat;
 	unsigned long flags;
 	int wbn;
 	struct ard_wb *wb;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_write called\n");
 	if (!count)
 		return 0;
 
@@ -855,10 +863,10 @@ static int ard_tty_write(struct tty_struct *tty,
 static int ard_tty_ioctl(struct tty_struct *tty,
 					unsigned int cmd, unsigned long arg)
 {
-	printk(KERN_INFO "ard_tty_ioctl called\n");
 	struct ard *ard = tty->driver_data;
 	int rv = -ENOIOCTLCMD;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_ioctl called\n");
 	switch (cmd) {
 	case TIOCMIWAIT:
 		rv = usb_autopm_get_interface(ard->control);
@@ -877,12 +885,12 @@ static int ard_tty_ioctl(struct tty_struct *tty,
 static void ard_tty_set_termios(struct tty_struct *tty,
 						struct ktermios *termios_old)
 {
-	printk(KERN_INFO "ard_tty_set_termios called\n");
 	struct ard *ard = tty->driver_data;
 	struct ktermios *termios = &tty->termios;
 	struct usb_cdc_line_coding newline;
 	int newctrl = ard->ctrlout;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_tty_set_termios called\n");
 	newline.dwDTERate = cpu_to_le32(tty_get_baud_rate(tty));
 	newline.bCharFormat = termios->c_cflag & CSTOPB ? 2 : 0;
 	newline.bParityType = termios->c_cflag & PARENB ?
@@ -941,19 +949,19 @@ static const struct tty_port_operations ard_port_ops = {
 /* Little helpers: write/read buffers free */
 static void ard_write_buffers_free(struct ard *ard)
 {
-	printk(KERN_INFO "ard_write_buffers_free called\n");
 	int i;
 	struct ard_wb *wb;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_write_buffers_free called\n");
 	for (wb = &ard->wb[0], i = 0; i < ARD_NW; i++, wb++)
 		usb_free_coherent(ard->dev, ard->writesize, wb->buf, wb->dmah);
 }
 
 static void ard_read_buffers_free(struct ard *ard)
 {
-	printk(KERN_INFO "ard_read_buffers_free called\n");
 	int i;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_read_buffers_free called\n");
 	for (i = 0; i < ard->rx_buflimit; i++)
 		usb_free_coherent(ard->dev, ard->readsize,
 			  ard->read_buffers[i].base, ard->read_buffers[i].dma);
@@ -962,10 +970,10 @@ static void ard_read_buffers_free(struct ard *ard)
 /* Little helper: write buffers allocate */
 static int ard_write_buffers_alloc(struct ard *ard)
 {
-	printk(KERN_INFO "ard_write_buffers_alloc called\n");
 	int i;
 	struct ard_wb *wb;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_write_buffers_alloc called\n");
 	for (wb = &ard->wb[0], i = 0; i < ARD_NW; i++, wb++) {
 		wb->buf = usb_alloc_coherent(ard->dev, ard->writesize, GFP_KERNEL,
 		    &wb->dmah);
@@ -984,7 +992,6 @@ static int ard_write_buffers_alloc(struct ard *ard)
 
 static int ard_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
-	printk(KERN_INFO "ard_probe called\n");
 	struct usb_cdc_union_desc *union_header = NULL;
 	struct usb_cdc_call_mgmt_descriptor *cmgmd = NULL;
 	unsigned char *buffer = intf->altsetting->extra;
@@ -1008,6 +1015,7 @@ static int ard_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	struct device *tty_dev;
 	int rv = -ENOMEM;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_probe called\n");
 	memset(&h, 0x00, sizeof(struct usb_cdc_parsed_header));
 	num_rx_buf = ARD_NR;
 
@@ -1308,11 +1316,11 @@ alloc_fail:
 
 static void ard_disconnect(struct usb_interface *intf)
 {
-	printk(KERN_INFO "ard_disconnect called\n");
 	struct ard *ard = usb_get_intfdata(intf);
 	struct tty_struct *tty;
 	int i;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_disconnect called\n");
 	/* sibling interface is already cleaning up */
 	if (!ard)
 		return;
@@ -1363,10 +1371,10 @@ static void ard_disconnect(struct usb_interface *intf)
 #ifdef CONFIG_PM
 static int ard_suspend(struct usb_interface *intf, pm_message_t message)
 {
-	printk(KERN_INFO "ard_suspend called\n");
 	struct ard *ard = usb_get_intfdata(intf);
 	int cnt;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_suspend called\n");
 	spin_lock_irq(&ard->write_lock);
 	if (PMSG_IS_AUTO(message)) {
 		if (ard->transmitting) {
@@ -1389,11 +1397,11 @@ static int ard_suspend(struct usb_interface *intf, pm_message_t message)
 
 static int ard_resume(struct usb_interface *intf)
 {
-	printk(KERN_INFO "ard_resume called\n");
 	struct ard *ard = usb_get_intfdata(intf);
 	struct urb *urb;
 	int rv = 0;
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_resume called\n");
 	spin_lock_irq(&ard->write_lock);
 
 	if (--ard->susp_count)
@@ -1427,9 +1435,9 @@ out:
 
 static int ard_reset_resume(struct usb_interface *intf)
 {
-	printk(KERN_INFO "ard_reset_resume called\n");
 	struct ard *ard = usb_get_intfdata(intf);
 
+	printk(KERN_INFO KBUILD_MODNAME ": ard_reset_resume called\n");
 	if (tty_port_initialized(&ard->port))
 		tty_port_tty_hangup(&ard->port, false);
 
@@ -1472,7 +1480,7 @@ static const struct tty_operations ard_ops = {
 static int __init ard_init(void)
 {
 	int retval;
-	printk(KERN_INFO "THIS IS MY MODULE\n");
+	printk(KERN_INFO KBUILD_MODNAME ": THIS IS MY MODULE\n");
 	ard_tty_driver = alloc_tty_driver(ARD_TTY_MINORS);
 	if (!ard_tty_driver)
 		return -ENOMEM;
@@ -1496,21 +1504,21 @@ static int __init ard_init(void)
 
 	tty_set_operations(ard_tty_driver, &ard_ops);
 
-	printk(KERN_INFO "register tty\n");
+	printk(KERN_INFO KBUILD_MODNAME ": register tty\n");
 	retval = tty_register_driver(ard_tty_driver);
 	if (retval) {
 		put_tty_driver(ard_tty_driver);
 		return retval;
 	}
-	printk(KERN_INFO "regisration finished tty\n");
-	printk(KERN_INFO "register usb\n");
+	printk(KERN_INFO KBUILD_MODNAME ": regisration finished tty\n");
+	printk(KERN_INFO KBUILD_MODNAME ": register usb\n");
 	retval = usb_register(&ard_driver);
 	if (retval) {
 		tty_unregister_driver(ard_tty_driver);
 		put_tty_driver(ard_tty_driver);
 		return retval;
 	}
-	printk(KERN_INFO "regisration finished usb\n");
+	printk(KERN_INFO KBUILD_MODNAME ": regisration finished usb\n");
 
 	printk(KERN_INFO KBUILD_MODNAME ": " DRIVER_DESC "\n");
 
