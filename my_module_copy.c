@@ -1131,8 +1131,8 @@ static int ard_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 	ard->minor = minor;
 	ard->dev = usb_dev;
-	if (h.usb_cdc_ard_descriptor)
-		ard->ctrl_caps = h.usb_cdc_ard_descriptor->bmCapabilities;
+	// if (h.usb_cdc_ard_descriptor)
+	// 	ard->ctrl_caps = h.usb_cdc_ard_descriptor->bmCapabilities;
 	ard->ctrlsize = ctrlsize;
 	ard->readsize = readsize;
 	ard->rx_buflimit = num_rx_buf;
